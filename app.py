@@ -305,7 +305,7 @@ pages = {
     "Overview": "🏠  Overview",
     "Student Dashboard": "👨‍🎓  Student Dashboard",
     "Teacher Dashboard": "👩‍🏫  Teacher Dashboard",
-    "Reading Assessment": "📝  Reading Assessment",
+    "Reading Assessment": "📝  Assessment Management",
     "Reading Support": "📖  Reading Support"
 }
 
@@ -524,111 +524,55 @@ elif page == "Teacher Dashboard":
     )
 
 
+
 # -----------------------------
-# READING ASSESSMENT
+# ADMIN - ASSESSMENT MANAGEMENT
 # -----------------------------
 elif page == "Reading Assessment":
 
-    st.title("📖 English Reading Assessment")
+    st.title("📝 Assessment Management")
     st.caption(
-        "Measure your reading comprehension through an educational passage."
+        "Create, organize, and manage English reading assessment content."
     )
 
-    st.markdown("""
-    <div class="hero">
-        <h2>Welcome to Your Reading Assessment!</h2>
-        <p>
-            Read the passage carefully and answer the comprehension questions.
-            This activity will help evaluate your understanding of written information.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    # DEFAULT PASSAGE
+    default_passage = """
+Environmental problems have become a major concern in many communities.
+Issues such as plastic pollution, improper waste disposal, and excessive
+energy consumption affect both people and the natural environment.
+Although these problems may seem difficult to solve, small actions
+performed by individuals can contribute to meaningful improvements.
 
-    # ASSESSMENT INFORMATION
-    info1, info2, info3 = st.columns(3)
+One practical way to protect the environment is through proper waste
+management. Separating biodegradable, recyclable, and non-recyclable
+materials helps reduce the amount of waste sent to landfills. Reusing
+containers, bringing reusable bags, and avoiding unnecessary single-use
+plastics are also simple habits that can reduce pollution.
 
-    assessment_info = [
-        (info1, "📚 Assessment Type", "Reading Comprehension"),
-        (info2, "📝 Total Questions", "8 Questions"),
-        (info3, "⏱️ Estimated Time", "15 Minutes")
-    ]
+Technology can also support environmental protection. Mobile applications
+and online platforms provide information about recycling programs,
+environmental campaigns, and sustainable practices. Schools can use
+digital tools to educate students about environmental issues and encourage
+participation in community activities. However, technology should be used
+responsibly because electronic waste and excessive energy consumption can
+create additional environmental challenges.
 
-    for col, label, value in assessment_info:
-        with col:
-            st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-name">{label}</div>
-                <div class="stat-number" style="font-size:20px;">
-                    {value}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+Students play an important role in promoting environmental awareness.
+They can participate in clean-up drives, organize recycling projects,
+and encourage their families and classmates to practice responsible waste
+disposal. These activities develop not only environmental responsibility
+but also cooperation, leadership, and problem-solving skills.
 
-    st.markdown("---")
+Protecting the environment does not require one person to make a dramatic
+change overnight. What matters is consistency and collective effort.
+When individuals make responsible choices and work together, small actions
+can create positive and lasting effects on the community and the environment.
+"""
 
-    # READING PASSAGE - CLEAN ARTICLE FORMAT
-    st.markdown("### 📖 Reading Passage")
-
-    st.markdown("""
-    # Small Actions, A Greener Future
-
-    **Topic:** Environmental Awareness
-
-    **Reading Level:** Secondary Education
-
-    ---
-
-    Environmental problems have become a major concern in many communities.
-    Issues such as plastic pollution, improper waste disposal, and excessive
-    energy consumption affect both people and the natural environment.
-    Although these problems may seem difficult to solve, small actions
-    performed by individuals can contribute to meaningful improvements.
-
-    One practical way to protect the environment is through proper waste
-    management. Separating biodegradable, recyclable, and non-recyclable
-    materials helps reduce the amount of waste sent to landfills. Reusing
-    containers, bringing reusable bags, and avoiding unnecessary single-use
-    plastics are also simple habits that can reduce pollution.
-
-    Technology can also support environmental protection. Mobile applications
-    and online platforms provide information about recycling programs,
-    environmental campaigns, and sustainable practices. Schools can use
-    digital tools to educate students about environmental issues and encourage
-    participation in community activities. However, technology should be used
-    responsibly because electronic waste and excessive energy consumption can
-    create additional environmental challenges.
-
-    Students play an important role in promoting environmental awareness.
-    They can participate in clean-up drives, organize recycling projects,
-    and encourage their families and classmates to practice responsible waste
-    disposal. These activities develop not only environmental responsibility
-    but also cooperation, leadership, and problem-solving skills.
-
-    Protecting the environment does not require one person to make a dramatic
-    change overnight. What matters is consistency and collective effort.
-    When individuals make responsible choices and work together, small actions
-    can create positive and lasting effects on the community and the environment.
-    """)
-
-    # INSTRUCTIONS
-    st.markdown("### 📌 Assessment Instructions")
-
-    st.info("""
-    1. Read the passage carefully before answering.
-    2. Answer all eight comprehension questions.
-    3. Select only one answer for each question.
-    4. Review your answers before submitting.
-    5. Click the Submit Assessment button to view your results.
-    """)
-
-    st.markdown("---")
-    st.markdown("### 📝 Comprehension Questions")
-
-    # QUESTIONS
-    questions = [
+    default_questions = [
         {
             "skill": "Main Idea",
-            "question": "1. What is the main idea of the passage?",
+            "question": "What is the main idea of the passage?",
             "options": [
                 "A. Technology is the only solution to environmental problems.",
                 "B. Small individual actions and collective efforts can help protect the environment.",
@@ -639,7 +583,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Vocabulary",
-            "question": "2. What does the word 'biodegradable' mean in the passage?",
+            "question": "What does the word 'biodegradable' mean in the passage?",
             "options": [
                 "A. Materials that can naturally decompose.",
                 "B. Materials that cannot be reused.",
@@ -650,7 +594,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Supporting Details",
-            "question": "3. Which of the following is mentioned as a way to reduce plastic pollution?",
+            "question": "Which of the following is mentioned as a way to reduce plastic pollution?",
             "options": [
                 "A. Buying more disposable products.",
                 "B. Burning plastic waste.",
@@ -661,7 +605,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Supporting Details",
-            "question": "4. How can technology help promote environmental protection?",
+            "question": "How can technology help promote environmental protection?",
             "options": [
                 "A. By replacing all environmental programs.",
                 "B. By providing information about recycling and environmental campaigns.",
@@ -672,7 +616,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Inference",
-            "question": "5. What can be inferred about the role of students in environmental protection?",
+            "question": "What can be inferred about the role of students in environmental protection?",
             "options": [
                 "A. Students are too young to make a difference.",
                 "B. Students can influence others through responsible actions.",
@@ -683,7 +627,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Cause and Effect",
-            "question": "6. What may happen when people fail to manage waste properly?",
+            "question": "What may happen when people fail to manage waste properly?",
             "options": [
                 "A. Pollution may increase.",
                 "B. Natural resources will automatically recover.",
@@ -694,7 +638,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Critical Thinking",
-            "question": "7. Which action best demonstrates responsible environmental behavior?",
+            "question": "Which action best demonstrates responsible environmental behavior?",
             "options": [
                 "A. Using disposable plastic products every day.",
                 "B. Ignoring community clean-up activities.",
@@ -705,7 +649,7 @@ elif page == "Reading Assessment":
         },
         {
             "skill": "Conclusion",
-            "question": "8. What message does the author emphasize in the final paragraph?",
+            "question": "What message does the author emphasize in the final paragraph?",
             "options": [
                 "A. Only large organizations can protect the environment.",
                 "B. Environmental protection requires expensive technology.",
@@ -716,158 +660,337 @@ elif page == "Reading Assessment":
         }
     ]
 
-    # INITIALIZE SESSION STATE
-    if "assessment_submitted" not in st.session_state:
-        st.session_state.assessment_submitted = False
+    # INITIALIZE ADMIN SESSION STATE
+    if "admin_questions" not in st.session_state:
+        st.session_state.admin_questions = [
+            question.copy() for question in default_questions
+        ]
 
-    if "assessment_score" not in st.session_state:
-        st.session_state.assessment_score = None
+    if "admin_passage_title" not in st.session_state:
+        st.session_state.admin_passage_title = "Small Actions, A Greener Future"
 
-    # PROGRESS TRACKING
-    answered = sum(
-        1 for i in range(len(questions))
-        if st.session_state.get(f"question_{i}") is not None
-    )
+    if "admin_passage_topic" not in st.session_state:
+        st.session_state.admin_passage_topic = "Environmental Awareness"
 
-    progress = answered / len(questions)
+    if "admin_passage_level" not in st.session_state:
+        st.session_state.admin_passage_level = "Secondary Education"
 
-    st.markdown(
-        f"**Assessment Progress: {answered}/{len(questions)} questions answered**"
-    )
-    st.progress(progress)
+    if "admin_passage_content" not in st.session_state:
+        st.session_state.admin_passage_content = default_passage
 
-    st.caption(
-        "Select one answer for every question before submitting your assessment."
-    )
+    # ADMIN SUMMARY
+    total_questions = len(st.session_state.admin_questions)
 
-    # DISPLAY QUESTIONS
-    for i, item in enumerate(questions):
+    col1, col2, col3 = st.columns(3)
 
+    with col1:
         st.markdown(f"""
-        <div class="panel">
-            <span style="
-                color:#7956B5;
-                font-size:12px;
-                font-weight:700;
-                text-transform:uppercase;
-            ">
-                {item["skill"]}
-            </span>
-            <h4 style="color:#493078; margin-top:8px;">
-                {item["question"]}
-            </h4>
+        <div class="stat-card">
+            <div class="stat-name">📚 Reading Passages</div>
+            <div class="stat-number">1</div>
+            <div class="stat-note">Available passage</div>
         </div>
         """, unsafe_allow_html=True)
 
-        st.radio(
-            item["question"],
-            item["options"],
-            key=f"question_{i}",
-            index=None,
-            label_visibility="collapsed",
-            disabled=st.session_state.assessment_submitted
-        )
+    with col2:
+        st.markdown(f"""
+        <div class="stat-card">
+            <div class="stat-name">📝 Total Questions</div>
+            <div class="stat-number">{total_questions}</div>
+            <div class="stat-note">Questions in this assessment</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+        <div class="stat-card">
+            <div class="stat-name">📊 Assessment Status</div>
+            <div class="stat-number" style="font-size:23px;">Draft</div>
+            <div class="stat-note">Demonstration content</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    # SUBMIT ASSESSMENT
-    if not st.session_state.assessment_submitted:
+    # READING PASSAGE MANAGEMENT
+    st.markdown("## 📖 Reading Passage Management")
+    st.caption("Manage the reading material used in the assessment.")
 
-        if st.button(
-            "Submit Assessment",
-            type="primary",
-            use_container_width=True
-        ):
+    with st.container(border=True):
 
-            # Recheck current answers when submitting
-            answered_now = sum(
-                1 for i in range(len(questions))
-                if st.session_state.get(f"question_{i}") is not None
-            )
+        st.markdown("### Passage Information")
 
-            if answered_now < len(questions):
-                st.warning(
-                    f"Please answer all questions first. "
-                    f"You still have {len(questions) - answered_now} unanswered question(s)."
+        st.markdown(
+            f"**Title:** {st.session_state.admin_passage_title}"
+        )
+        st.markdown(
+            f"**Topic:** {st.session_state.admin_passage_topic}"
+        )
+        st.markdown(
+            f"**Reading Level:** {st.session_state.admin_passage_level}"
+        )
+
+        st.divider()
+
+        st.markdown("### Reading Material")
+
+        st.markdown(
+            f"## {st.session_state.admin_passage_title}"
+        )
+
+        st.caption(
+            f"{st.session_state.admin_passage_topic} | "
+            f"{st.session_state.admin_passage_level}"
+        )
+
+        st.markdown(st.session_state.admin_passage_content)
+
+        with st.expander("✏️ Edit Reading Passage"):
+
+            with st.form("edit_passage_form"):
+
+                new_title = st.text_input(
+                    "Passage Title",
+                    value=st.session_state.admin_passage_title
                 )
 
-            else:
-                score = 0
+                new_topic = st.text_input(
+                    "Topic",
+                    value=st.session_state.admin_passage_topic
+                )
 
-                for i, item in enumerate(questions):
-                    selected = st.session_state.get(f"question_{i}")
+                level_options = [
+                    "Elementary",
+                    "Junior High School",
+                    "Secondary Education",
+                    "Senior High School"
+                ]
 
-                    if selected == item["answer"]:
-                        score += 1
+                current_level = st.session_state.admin_passage_level
 
-                st.session_state.assessment_score = score
-                st.session_state.assessment_submitted = True
+                new_level = st.selectbox(
+                    "Reading Level",
+                    level_options,
+                    index=(
+                        level_options.index(current_level)
+                        if current_level in level_options else 2
+                    )
+                )
 
-                st.rerun()
+                new_content = st.text_area(
+                    "Passage Content",
+                    value=st.session_state.admin_passage_content,
+                    height=300
+                )
 
-    # ASSESSMENT RESULTS
-    if st.session_state.assessment_submitted:
+                save_passage = st.form_submit_button(
+                    "Save Passage Changes",
+                    use_container_width=True
+                )
 
-        score = st.session_state.assessment_score
-        percentage = (score / len(questions)) * 100
+                if save_passage:
 
-        st.markdown("## 📊 Assessment Results")
+                    if new_title.strip() and new_content.strip():
 
-        result1, result2, result3 = st.columns(3)
+                        st.session_state.admin_passage_title = new_title
+                        st.session_state.admin_passage_topic = new_topic
+                        st.session_state.admin_passage_level = new_level
+                        st.session_state.admin_passage_content = new_content
 
-        with result1:
-            st.metric("Total Score", f"{score}/{len(questions)}")
+                        st.success("Reading passage updated successfully.")
+                        st.rerun()
 
-        with result2:
-            st.metric("Percentage", f"{percentage:.1f}%")
+                    else:
+                        st.error(
+                            "Please provide a passage title and content."
+                        )
 
-        with result3:
-            st.metric("Questions Answered", f"{len(questions)}/{len(questions)}")
+    st.markdown("---")
 
-        if percentage >= 80:
-            st.success(
-                "Excellent! You demonstrated a strong understanding of the passage."
-            )
-        elif percentage >= 60:
-            st.info(
-                "Good effort! Continue practicing to improve your reading comprehension."
-            )
-        else:
-            st.warning(
-                "You may need additional reading practice. Review the passage and "
-                "focus on identifying important details and ideas."
-            )
+    # QUESTION MANAGEMENT
+    st.markdown("## 📝 Question Management")
+    st.caption(
+        "Manage comprehension questions, answer choices, and correct answers."
+    )
 
-        st.markdown("### Answer Review")
+    skill_options = [
+        "Main Idea",
+        "Vocabulary",
+        "Supporting Details",
+        "Inference",
+        "Cause and Effect",
+        "Critical Thinking",
+        "Conclusion"
+    ]
 
-        for i, item in enumerate(questions):
+    for i, item in enumerate(st.session_state.admin_questions):
 
-            selected = st.session_state.get(f"question_{i}")
-            correct = selected == item["answer"]
-
-            if correct:
-                st.success(f"Question {i + 1}: Correct")
-            else:
-                st.error(f"Question {i + 1}: Incorrect")
-                st.write(f"Your answer: {selected}")
-                st.write(f"Correct answer: {item['answer']}")
-
-        if st.button(
-            "Take Assessment Again",
-            use_container_width=True
+        with st.expander(
+            f"Question {i + 1} — {item['skill']}"
         ):
 
-            for i in range(len(questions)):
-                st.session_state.pop(f"question_{i}", None)
+            st.markdown(f"**{item['question']}**")
+            st.markdown("**Answer Choices:**")
 
-            st.session_state.assessment_submitted = False
-            st.session_state.assessment_score = None
+            for option in item["options"]:
 
-            st.rerun()
+                if option == item["answer"]:
+                    st.markdown(
+                        f"<span style='color:green; font-weight:700;'>"
+                        f"✓ {option} — Correct Answer</span>",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"<span style='color:#000000;'>{option}</span>",
+                        unsafe_allow_html=True
+                    )
+
+            st.caption(f"Question Skill: {item['skill']}")
+
+            with st.form(f"edit_question_form_{i}"):
+
+                current_skill_index = (
+                    skill_options.index(item["skill"])
+                    if item["skill"] in skill_options else 0
+                )
+
+                edited_skill = st.selectbox(
+                    "Question Skill",
+                    skill_options,
+                    index=current_skill_index
+                )
+
+                edited_question = st.text_input(
+                    "Question",
+                    value=item["question"]
+                )
+
+                edited_options = []
+
+                for j, option in enumerate(item["options"]):
+
+                    edited_options.append(
+                        st.text_input(
+                            f"Choice {chr(65 + j)}",
+                            value=option
+                        )
+                    )
+
+                current_answer_index = item["options"].index(
+                    item["answer"]
+                )
+
+                edited_answer = st.selectbox(
+                    "Correct Answer",
+                    options=[0, 1, 2, 3],
+                    index=current_answer_index,
+                    format_func=lambda x: f"Choice {chr(65 + x)}"
+                )
+
+                save_question = st.form_submit_button(
+                    "Save Question Changes",
+                    use_container_width=True
+                )
+
+                if save_question:
+
+                    if (
+                        edited_question.strip()
+                        and all(option.strip() for option in edited_options)
+                    ):
+
+                        st.session_state.admin_questions[i] = {
+                            "skill": edited_skill,
+                            "question": edited_question,
+                            "options": edited_options,
+                            "answer": edited_options[edited_answer]
+                        }
+
+                        st.success("Question updated successfully.")
+                        st.rerun()
+
+                    else:
+                        st.error(
+                            "Please complete the question and all choices."
+                        )
+
+            if st.button(
+                "Delete Question",
+                key=f"delete_admin_question_{i}"
+            ):
+
+                st.session_state.admin_questions.pop(i)
+                st.success("Question deleted successfully.")
+                st.rerun()
+
+    # ADD NEW QUESTION
+    st.markdown("---")
+    st.markdown("## ➕ Add New Question")
+    st.caption("Create another comprehension question for this passage.")
+
+    with st.container(border=True):
+
+        with st.form("add_new_question_form"):
+
+            new_skill = st.selectbox(
+                "Question Skill",
+                skill_options,
+                key="new_question_skill"
+            )
+
+            new_question = st.text_input(
+                "Question",
+                key="new_question_text"
+            )
+
+            new_options = []
+
+            for i in range(4):
+
+                new_options.append(
+                    st.text_input(
+                        f"Choice {chr(65 + i)}",
+                        key=f"new_question_choice_{i}"
+                    )
+                )
+
+            new_correct_answer = st.selectbox(
+                "Correct Answer",
+                options=[0, 1, 2, 3],
+                format_func=lambda x: f"Choice {chr(65 + x)}"
+            )
+
+            add_question = st.form_submit_button(
+                "Add Question",
+                use_container_width=True
+            )
+
+            if add_question:
+
+                if (
+                    new_question.strip()
+                    and all(option.strip() for option in new_options)
+                ):
+
+                    st.session_state.admin_questions.append({
+                        "skill": new_skill,
+                        "question": new_question,
+                        "options": new_options,
+                        "answer": new_options[new_correct_answer]
+                    })
+
+                    st.success("New question added successfully.")
+                    st.rerun()
+
+                else:
+                    st.error(
+                        "Please complete the question and all four choices."
+                    )
 
     st.caption(
-        "Academic prototype assessment. Questions and scoring are for demonstration "
-        "and require validation before use as a formal research instrument."
+        "Administrator content management prototype. Changes are stored "
+        "in the current Streamlit session only and are not yet saved permanently."
     )
 
 
