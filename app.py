@@ -391,6 +391,62 @@ textarea:disabled {
     -webkit-text-fill-color: #4B5563 !important;
     opacity: 1 !important;
 }
+
+/* =====================================
+   ACCESSIBILITY: BUTTON TEXT CONTRAST
+===================================== */
+
+/* Default button state */
+.stButton > button,
+.stFormSubmitButton > button {
+    background-color: #30204F !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    border: 1px solid #30204F !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+}
+
+/* Ensure nested button text is also white */
+.stButton > button *,
+.stFormSubmitButton > button * {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Hover state */
+.stButton > button:hover,
+.stFormSubmitButton > button:hover {
+    background-color: #49336F !important;
+    color: #FFFFFF !important;
+    border-color: #49336F !important;
+}
+
+/* Active state */
+.stButton > button:active,
+.stFormSubmitButton > button:active {
+    background-color: #24183D !important;
+    color: #FFFFFF !important;
+    border-color: #24183D !important;
+}
+
+/* Disabled state */
+.stButton > button:disabled,
+.stFormSubmitButton > button:disabled {
+    background-color: #5B5368 !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    border-color: #5B5368 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+}
+
+/* Keyboard focus state */
+.stButton > button:focus-visible,
+.stFormSubmitButton > button:focus-visible {
+    outline: 3px solid #8B70D6 !important;
+    outline-offset: 3px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
