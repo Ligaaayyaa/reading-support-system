@@ -514,7 +514,30 @@ with st.sidebar:
 
 page = st.session_state.current_page
 
+# -----------------------------
+# GLOBAL SESSION DATA
+# -----------------------------
 
+# Assessment records
+if "saved_assessments" not in st.session_state:
+    st.session_state.saved_assessments = []
+
+# Student records
+if "student_records" not in st.session_state:
+    st.session_state.student_records = []
+
+# Teacher records
+if "teacher_records" not in st.session_state:
+    st.session_state.teacher_records = []
+
+# Completed assessment results
+if "assessment_results" not in st.session_state:
+    st.session_state.assessment_results = []
+
+# ML prediction records
+if "ml_predictions" not in st.session_state:
+    st.session_state.ml_predictions = []
+    
 # -----------------------------
 # TOP HEADER - MODERN DESIGN
 # -----------------------------
@@ -535,6 +558,7 @@ st.html("""
 """)
 
 
+
 # -----------------------------
 # OVERVIEW PAGE
 # -----------------------------
@@ -547,32 +571,166 @@ if page == "Overview":
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### Dashboard Overview")
+    # -----------------------------
+    # GET AVAILABLE SESSION DATA
+    # -----------------------------
+    students = st.session_state.student_records
+    teachers = st.session_state.teacher_records
+    assessments = st.session_state.saved_assessments
+    results = st.session_state.assessment_results
+    predictions = st.session_state.ml_predictions
 
-    c1, c2, c3, c4 = st.columns(4)
-
-    metrics = [
-        ("👥", "Registered Students", "--", "Database not connected"),
-        ("📝", "Assessments Completed", "--", "No records yet"),
-        ("📊", "Average Reading Score", "--", "Awaiting assessment"),
-        ("🤖", "ML Model Status", "Pending", "Not yet trained")
+    # Calculate available assessment scores
+    valid_scores = [
+        float(result["Reading Score"])
+        for result in results
+        if result.get("Reading Score") is not None
     ]
 
-    for col, item in zip([c1, c2, c3, c4], metrics):
+    average_score = (
+        round(sum(valid_scores) / len(valid_scores), 1)
+        if valid_scores else None
+    )
+
+    # -----------------------------
+    # DASHBOARD OVERVIEW
+    # -----------------------------
+    st.markdown("### Dashboard Overview")
+
+    metrics = [
+        ("👥", "Registered Students", len(students),
+         "Registered student accounts"),
+
+        ("👩‍🏫", "Total Teachers", len(teachers),
+         "Registered teacher accounts"),
+
+        ("📝", "Assessments Completed", len(results),
+         "Recorded student submissions"),
+
+        ("📚", "Assessments Created", len(assessments),
+         "Saved assessment records"),
+
+        ("📊", "Average Reading Score",
+         f"{average_score}%" if average_score is not None else "--",
+         "Based on recorded results"),
+
+        ("🤖", "ML Model Status", "Pending",
+         "Model not yet connected")
+    ]
+
+    for start in range(0, len(metrics), 3):
+
+        metric_cols = st.columns(3)
+
+        for col, item in zip(
+            metric_cols,
+            metrics[start:start + 3]
+        ):
+
+            with col:
+                st.markdown(f"""
+                <div class="stat-card">
+                    <div class="stat-name">{item[0]} {item[1]}</div>
+                    <div class="stat-number">{item[2]}</div>
+                    <div class="stat-note">{item[3]}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+    # -----------------------------
+    # READING CLASSIFICATION SUMMARY
+    # -----------------------------
+    st.markdown("### Reading Classification Summary")
+
+    classification_levels = [
+        "Advanced",
+        "Proficient",
+        "Developing",
+        "At Risk"
+    ]
+
+    classification_counts = {
+        level: sum(
+            1 for result in results
+            if result.get("Performance") == level
+        )
+        for level in classification_levels
+    }
+
+    class_cols = st.columns(4)
+
+    for col, level in zip(class_cols, classification_levels):
+
         with col:
+
             st.markdown(f"""
             <div class="stat-card">
-                <div class="stat-name">{item[0]} {item[1]}</div>
-                <div class="stat-number">{item[2]}</div>
-                <div class="stat-note">{item[3]}</div>
+                <div class="stat-name">{level}</div>
+                <div class="stat-number">
+                    {classification_counts[level]}
+                </div>
+                <div class="stat-note">
+                    Recorded student classifications
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
+    # -----------------------------
+    # STUDENT INTERVENTION AND PROGRESS
+    # -----------------------------
+    st.markdown("### Student Monitoring Summary")
+
+    intervention_count = sum(
+        1 for result in results
+        if result.get("Performance") == "At Risk"
+    )
+
+    monitoring_col1, monitoring_col2, monitoring_col3 = st.columns(3)
+
+    with monitoring_col1:
+        st.markdown("""
+        <div class="panel">
+            <div class="panel-title">Students Requiring Intervention</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.metric(
+            "At Risk Assessment Records",
+            intervention_count
+        )
+
+    with monitoring_col2:
+        st.markdown("""
+        <div class="panel">
+            <div class="panel-title">Progress Monitoring</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.metric(
+            "Recorded Assessment Results",
+            len(results)
+        )
+
+    with monitoring_col3:
+        st.markdown("""
+        <div class="panel">
+            <div class="panel-title">ML Prediction Summary</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.metric(
+            "Recorded Predictions",
+            len(predictions)
+        )
+
+    # -----------------------------
+    # READING PERFORMANCE ANALYTICS
+    # -----------------------------
     st.markdown("### Reading Performance Analytics")
 
     chart_col, dist_col = st.columns([2, 1])
 
     with chart_col:
+
         st.markdown('<div class="panel">', unsafe_allow_html=True)
         st.markdown("**Sample Reading Scores**")
         st.caption("Illustrative demonstration data only.")
@@ -585,8 +743,9 @@ if page == "Overview":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with dist_col:
+
         st.markdown('<div class="panel">', unsafe_allow_html=True)
-        st.markdown("**Performance Distribution**")
+        st.markdown("**Sample Performance Distribution**")
         st.caption("Illustrative demonstration data only.")
 
         distribution = data["Performance"].value_counts()
@@ -598,6 +757,9 @@ if page == "Overview":
 
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # -----------------------------
+    # RECENT ASSESSMENT ACTIVITY
+    # -----------------------------
     st.markdown("### Recent Assessment Activity")
     st.caption("Sample records only; not actual student information.")
 
@@ -607,19 +769,31 @@ if page == "Overview":
         hide_index=True
     )
 
+    # -----------------------------
+    # SYSTEM MODULES
+    # -----------------------------
     st.markdown("### System Modules")
 
     a, b, c, d = st.columns(4)
 
     modules = [
-        (a, "📊", "Student Dashboard", "Student results and progress"),
-        (b, "👩‍🏫", "Teacher Dashboard", "Class performance overview"),
-        (c, "📝", "Reading Assessment", "English comprehension tasks"),
-        (d, "📖", "Reading Support", "Learning activities and resources")
+        (a, "📊", "Student Dashboard",
+         "Student results and progress"),
+
+        (b, "👩‍🏫", "Teacher Dashboard",
+         "Class performance overview"),
+
+        (c, "📝", "Reading Assessment",
+         "English comprehension tasks"),
+
+        (d, "📖", "Reading Support",
+         "Learning activities and resources")
     ]
 
     for col, icon, title, desc in modules:
+
         with col:
+
             st.markdown(f"""
             <div class="stat-card">
                 <div style="font-size:25px">{icon}</div>
