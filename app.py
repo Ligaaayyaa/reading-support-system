@@ -273,6 +273,126 @@ div[data-testid="stRadio"] label span {
     font-size: 12px;
 }
 </style>
+
+/* ================================
+   ACCESSIBILITY: FORM TEXT CONTRAST
+================================ */
+
+/* General labels and form instructions */
+.stTextInput label,
+.stTextArea label,
+.stNumberInput label,
+.stSelectbox label,
+.stMultiSelect label,
+.stRadio label,
+.stCheckbox label,
+.stDateInput label,
+.stTimeInput label,
+.stSlider label,
+[data-testid="stWidgetLabel"] p,
+[data-testid="stMarkdownContainer"] p {
+    color: #1F2937 !important;
+}
+
+/* Text inputs, text areas, number inputs, and date/time fields */
+.stTextInput input,
+.stTextArea textarea,
+.stNumberInput input,
+.stDateInput input,
+.stTimeInput input {
+    color: #1F2937 !important;
+    background-color: #FFFFFF !important;
+    -webkit-text-fill-color: #1F2937 !important;
+    border: 1px solid #9CA3AF !important;
+}
+
+/* Placeholder text */
+.stTextInput input::placeholder,
+.stTextArea textarea::placeholder,
+.stNumberInput input::placeholder {
+    color: #6B7280 !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #6B7280 !important;
+}
+
+/* Text area content */
+.stTextArea textarea {
+    color: #1F2937 !important;
+    background-color: #FFFFFF !important;
+}
+
+/* Select boxes and multiselect fields */
+.stSelectbox div[data-baseweb="select"] > div,
+.stMultiSelect div[data-baseweb="select"] > div {
+    color: #1F2937 !important;
+    background-color: #FFFFFF !important;
+    border-color: #9CA3AF !important;
+}
+
+/* Selected values and dropdown text */
+.stSelectbox [data-testid="stMarkdownContainer"],
+.stMultiSelect [data-testid="stMarkdownContainer"],
+[role="option"] {
+    color: #1F2937 !important;
+}
+
+/* Radio buttons and checkboxes */
+.stRadio div[role="radiogroup"] label,
+.stCheckbox label,
+.stRadio div[role="radiogroup"] p,
+.stCheckbox p {
+    color: #1F2937 !important;
+}
+
+/* Form buttons */
+.stButton button,
+.stFormSubmitButton button {
+    color: #FFFFFF !important;
+    background-color: #30204F !important;
+    border: 1px solid #30204F !important;
+    font-weight: 600 !important;
+}
+
+/* Button hover */
+.stButton button:hover,
+.stFormSubmitButton button:hover {
+    color: #FFFFFF !important;
+    background-color: #49336F !important;
+    border-color: #49336F !important;
+}
+
+/* Sidebar text and buttons */
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span {
+    color: #FFFFFF !important;
+}
+
+/* Sidebar buttons */
+section[data-testid="stSidebar"] .stButton button {
+    color: #FFFFFF !important;
+    background-color: #49336F !important;
+    border-color: #49336F !important;
+}
+
+/* Focus indicator for keyboard accessibility */
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+.stNumberInput input:focus,
+.stSelectbox div[data-baseweb="select"]:focus-within {
+    border: 2px solid #30204F !important;
+    box-shadow: 0 0 0 2px rgba(48, 32, 79, 0.20) !important;
+    outline: none !important;
+}
+
+/* Disabled fields */
+input:disabled,
+textarea:disabled {
+    color: #4B5563 !important;
+    background-color: #E5E7EB !important;
+    -webkit-text-fill-color: #4B5563 !important;
+    opacity: 1 !important;
+}
 """, unsafe_allow_html=True)
 
 
