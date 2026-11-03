@@ -1343,6 +1343,64 @@ can create positive and lasting effects on the community and the environment.
 
                 st.success("New assessment saved successfully!")
                 st.rerun()
+
+        # -----------------------------
+    # SAVED ASSESSMENTS TABLE
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("## 📋 Saved Assessments")
+
+    if st.session_state.saved_assessments:
+
+        assessment_table = []
+
+        for assessment in st.session_state.saved_assessments:
+            assessment_table.append({
+                "Assessment ID": assessment["Assessment ID"],
+                "Passage Title": assessment["Passage Title"],
+                "Topic": assessment["Topic"],
+                "Reading Level": assessment["Reading Level"],
+                "Total Questions": assessment["Total Questions"],
+                "Status": assessment["Status"]
+            })
+
+        st.dataframe(
+            pd.DataFrame(assessment_table),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.markdown("### View Assessment Details")
+
+        for assessment in st.session_state.saved_assessments:
+
+            with st.expander(
+                f"Assessment {assessment['Assessment ID']} — "
+                f"{assessment['Passage Title']}"
+            ):
+                st.write(f"**Topic:** {assessment['Topic']}")
+                st.write(f"**Reading Level:** {assessment['Reading Level']}")
+                st.write(f"**Total Questions:** {assessment['Total Questions']}")
+
+                st.markdown("**Reading Material**")
+                st.write(assessment["Reading Material"])
+
+                st.markdown("**Comprehension Questions**")
+
+                for index, question in enumerate(
+                    assessment["Questions"], start=1
+                ):
+                    st.markdown(f"**{index}. {question['question']}**")
+                    st.caption(f"Skill: {question['skill']}")
+
+                    for option in question["options"]:
+                        st.write(f"- {option}")
+
+                    st.write(f"Correct Answer: {question['answer']}")
+
+    else:
+        st.info("No saved assessments yet.")
+        
     # -----------------------------
     # ADMIN SUMMARY
     # -----------------------------
