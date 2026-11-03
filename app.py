@@ -812,6 +812,7 @@ if page == "Overview":
             """, unsafe_allow_html=True)
 
 
+
 # -----------------------------
 # STUDENT DASHBOARD
 # -----------------------------
@@ -820,19 +821,89 @@ elif page == "Student Dashboard":
     st.title("Student Dashboard")
     st.caption("Your personal reading performance space.")
 
+    # Get published assessments only
+    published_assessments = [
+        assessment
+        for assessment in st.session_state.saved_assessments
+        if assessment.get("Status") == "Published"
+    ]
+
+    # Student overview
     c1, c2 = st.columns(2)
 
     with c1:
-        st.metric("Latest Reading Score", "Not assessed")
+        st.metric("Available Assessments", len(published_assessments))
 
     with c2:
-        st.metric("Performance Classification", "Pending")
+        st.metric("Latest Reading Score", "Not assessed")
 
-    st.subheader("Your Reading Progress")
+    st.divider()
 
-    st.info(
-        "Your assessment results will appear here once assessment records are connected."
-    )
+    # Available assessments
+    st.subheader("📝 Available Reading Assessments")
+
+    if published_assessments:
+
+        st.caption(
+            "Select an available assessment to view its reading passage "
+            "and comprehension questions."
+        )
+
+        for assessment in published_assessments:
+
+            with st.expander(
+                f"📖 {assessment['Passage Title']}",
+                expanded=False
+            ):
+
+                st.markdown(
+                    f"**Topic:** {assessment['Topic']}"
+                )
+
+                st.markdown(
+                    f"**Reading Level:** {assessment['Reading Level']}"
+                )
+
+                st.markdown(
+                    f"**Total Questions:** {len(assessment['Questions'])}"
+                )
+
+                st.divider()
+
+                st.markdown("### Reading Passage")
+
+                st.write(assessment["Reading Material"])
+
+                st.divider()
+
+                st.markdown("### Comprehension Questions")
+
+                for index, question in enumerate(
+                    assessment["Questions"]
+                ):
+
+                    st.markdown(
+                        f"**{index + 1}. {question['question']}**"
+                    )
+
+                    for option in question["options"]:
+                        st.write(option)
+
+                    st.caption(
+                        f"Skill: {question['skill']}"
+                    )
+
+                    st.write("")
+
+    else:
+
+        st.info(
+            "There are currently no published assessments available. "
+            "Please check again later."
+        )
+
+    # Learning areas
+    st.divider()
 
     st.subheader("Learning Areas")
 
@@ -840,12 +911,15 @@ elif page == "Student Dashboard":
 
     with x:
         st.markdown("**📖 Reading Comprehension**")
-        st.write("Understand passages and identify key details.")
+        st.write(
+            "Understand passages and identify key details."
+        )
 
     with y:
         st.markdown("**📝 Vocabulary Development**")
-        st.write("Develop vocabulary and context clue skills.")
-
+        st.write(
+            "Develop vocabulary and context clue skills."
+        )
 
 # -----------------------------
 # TEACHER DASHBOARD
