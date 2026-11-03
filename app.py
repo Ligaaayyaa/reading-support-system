@@ -1478,6 +1478,3 @@ st.markdown(
     '<div class="footer">Reading Support System | Academic Capstone Prototype | Version 2.0</div>',
     unsafe_allow_html=True
 )
-
-
-san ko ilalagay
