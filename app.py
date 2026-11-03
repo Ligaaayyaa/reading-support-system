@@ -1581,6 +1581,197 @@ elif page == "Student Dashboard":
                     st.caption(question["explanation"])
 
         
+        # INTERACTIVE INFERENTIAL READING
+        st.divider()
+        st.subheader("📖 Interactive Activity: Inferential Reading")
+
+        st.write(
+            "Read the passage carefully and answer questions "
+            "that require you to make logical inferences."
+        )
+
+        inferential_passage = """
+        ### The Forgotten Umbrella
+
+        Anna looked outside the classroom window and noticed that
+        the sky had become dark. She quickly packed her books and
+        checked her bag. After a moment, she sighed and looked at
+        the students leaving the building with their umbrellas.
+
+        She decided to wait near the school entrance. A few minutes
+        later, her older brother arrived carrying an extra umbrella.
+        Anna smiled, thanked him, and walked with him toward the gate.
+        """
+
+        with st.expander("Open Inferential Reading Exercise"):
+
+            st.markdown("### Reading Passage")
+            st.markdown(inferential_passage)
+
+            st.markdown("### Instructions")
+
+            st.write(
+                "Read the passage and choose the most reasonable answer "
+                "based on the information and clues provided."
+            )
+
+            inferential_questions = [
+                {
+                    "question": "What can you infer about the weather?",
+                    "options": [
+                        "It was about to rain.",
+                        "It was extremely hot.",
+                        "It was snowing.",
+                        "The weather was very sunny."
+                    ],
+                    "answer": "It was about to rain.",
+                    "explanation": "The dark sky and students carrying umbrellas suggest that rain was likely."
+                },
+                {
+                    "question": "Why did Anna sigh after checking her bag?",
+                    "options": [
+                        "She forgot to bring her umbrella.",
+                        "She lost her books.",
+                        "She wanted to go home alone.",
+                        "She was angry with her classmates."
+                    ],
+                    "answer": "She forgot to bring her umbrella.",
+                    "explanation": "Anna checked her bag and then watched other students leaving with umbrellas, suggesting she did not have one."
+                },
+                {
+                    "question": "What can you infer about Anna's brother?",
+                    "options": [
+                        "He wanted to help Anna.",
+                        "He was a teacher at the school.",
+                        "He forgot where Anna was.",
+                        "He did not want to walk with Anna."
+                    ],
+                    "answer": "He wanted to help Anna.",
+                    "explanation": "He arrived with an extra umbrella, allowing Anna to walk safely with him."
+                }
+            ]
+
+            with st.form(f"inferential_form_{student_id}"):
+
+                inferential_answers = []
+
+                for index, question in enumerate(inferential_questions):
+
+                    st.markdown(
+                        f"**Question {index + 1}. {question['question']}**"
+                    )
+
+                    answer = st.radio(
+                        "Choose your answer:",
+                        question["options"],
+                        index=None,
+                        key=f"inferential_answer_{student_id}_{index}"
+                    )
+
+                    inferential_answers.append(answer)
+
+                    st.divider()
+
+                submit_inferential = st.form_submit_button(
+                    "Submit Practice",
+                    use_container_width=True
+                )
+
+                if submit_inferential:
+
+                    if any(answer is None for answer in inferential_answers):
+
+                        st.error("Please answer all questions before submitting.")
+
+                    else:
+
+                        inferential_score = sum(
+                            1 for index, answer in enumerate(inferential_answers)
+                            if answer == inferential_questions[index]["answer"]
+                        )
+
+                        inferential_total = len(inferential_questions)
+
+                        inferential_percentage = round(
+                            (inferential_score / inferential_total) * 100, 2
+                        )
+
+                        practice_record = {
+                            "Student ID": student_id,
+                            "Student Name": selected_student["Full Name"],
+                            "Activity": "Inferential Reading",
+                            "Score": inferential_score,
+                            "Total Questions": inferential_total,
+                            "Percentage": inferential_percentage,
+                            "Submitted At": datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        }
+
+                        st.session_state.practice_results.append(
+                            practice_record
+                        )
+
+                        st.session_state[
+                            f"inferential_result_{student_id}"
+                        ] = {
+                            "score": inferential_score,
+                            "answers": inferential_answers
+                        }
+
+            # DISPLAY INFERENTIAL READING RESULT
+            latest_inferential = st.session_state.get(
+                f"inferential_result_{student_id}"
+            )
+
+            if latest_inferential:
+
+                st.divider()
+                st.markdown("### 📊 Inferential Reading Result")
+
+                score = latest_inferential["score"]
+                total = len(inferential_questions)
+                percentage = (score / total) * 100
+
+                col1, col2 = st.columns(2)
+
+                col1.metric("Practice Score", f"{score}/{total}")
+                col2.metric("Percentage", f"{percentage:.2f}%")
+
+                if score == total:
+
+                    st.success("Excellent! You understood the passage well.")
+
+                elif score >= 2:
+
+                    st.info("Good work! Continue practicing your inference skills.")
+
+                else:
+
+                    st.warning("Review the passage and explanations to improve.")
+
+                st.markdown("### Answer Review")
+
+                for index, question in enumerate(inferential_questions):
+
+                    student_answer = latest_inferential["answers"][index]
+                    correct_answer = question["answer"]
+
+                    st.markdown(f"**Question {index + 1}**")
+
+                    if student_answer == correct_answer:
+
+                        st.success(f"Correct: {correct_answer}")
+
+                    else:
+
+                        st.error(f"Your answer: {student_answer}")
+                        st.info(f"Correct answer: {correct_answer}")
+
+                    st.caption(question["explanation"])
+
+
+        
 
             
         # PRACTICE HISTORY AND PROGRESS TRACKING
