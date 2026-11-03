@@ -857,9 +857,8 @@ can create positive and lasting effects on the community and the environment.
         if key not in st.session_state:
             st.session_state[key] = value
 
-    # Store all saved assessment records
-        if "saved_assessments" not in st.session_state:
-            st.session_state.saved_assessments = []
+    if "saved_assessments" not in st.session_state:
+        st.session_state.saved_assessments = []
 
     skill_options = [
         "Main Idea",
