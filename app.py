@@ -1178,6 +1178,131 @@ elif page == "Student Dashboard":
                             st.info(
                                 f"Your reading performance classification is **{classification}**."
                             )
+                            
+        # PERSONALIZED READING SUPPORT
+        st.divider()
+        st.subheader("📖 Recommended Reading Support")
+
+        student_results = [
+            result for result in st.session_state.assessment_results
+            if result.get("Student ID") == student_id
+        ]
+
+        if student_results:
+
+            latest_result = sorted(
+                student_results,
+                key=lambda result: result.get("Submitted At", ""),
+                reverse=True
+            )[0]
+
+            classification = latest_result["Classification"]
+
+            reading_support = {
+                "Beginning": {
+                    "focus": "Build foundational reading skills.",
+                    "activities": [
+                        {
+                            "title": "Vocabulary Building",
+                            "description": "Practice identifying and understanding common English words."
+                        },
+                        {
+                            "title": "Sentence Reading",
+                            "description": "Read short and simple English sentences to improve reading accuracy."
+                        },
+                        {
+                            "title": "Short Passage Practice",
+                            "description": "Read short paragraphs and answer basic comprehension questions."
+                        }
+                    ]
+                },
+
+                "Developing": {
+                    "focus": "Improve comprehension and reading consistency.",
+                    "activities": [
+                        {
+                            "title": "Context Clues",
+                            "description": "Use surrounding words and sentences to understand unfamiliar vocabulary."
+                        },
+                        {
+                            "title": "Guided Reading",
+                            "description": "Read short passages and identify their main ideas and supporting details."
+                        },
+                        {
+                            "title": "Comprehension Practice",
+                            "description": "Answer questions about important details and events in a passage."
+                        }
+                    ]
+                },
+
+                "Proficient": {
+                    "focus": "Strengthen deeper understanding of English texts.",
+                    "activities": [
+                        {
+                            "title": "Inferential Reading",
+                            "description": "Identify implied meanings and make conclusions based on textual evidence."
+                        },
+                        {
+                            "title": "Main Idea and Evidence",
+                            "description": "Analyze how supporting details develop the central idea."
+                        },
+                        {
+                            "title": "Text Analysis",
+                            "description": "Examine the author's purpose, tone, and supporting arguments."
+                        }
+                    ]
+                },
+
+                "Advanced": {
+                    "focus": "Develop advanced analytical and critical reading skills.",
+                    "activities": [
+                        {
+                            "title": "Critical Reading",
+                            "description": "Evaluate arguments, evidence, and the credibility of information."
+                        },
+                        {
+                            "title": "Comparative Reading",
+                            "description": "Compare ideas and perspectives across different English texts."
+                        },
+                        {
+                            "title": "Advanced Text Analysis",
+                            "description": "Analyze complex passages, implied meanings, and rhetorical strategies."
+                        }
+                    ]
+                }
+            }
+
+            support = reading_support.get(classification)
+
+            if support:
+
+                st.info(
+                    f"Your current reading classification is **{classification}**. "
+                    f"{support['focus']}"
+                )
+
+                for index, activity in enumerate(support["activities"], start=1):
+
+                    with st.container(border=True):
+
+                        st.markdown(
+                            f"**{index}. {activity['title']}**"
+                        )
+
+                        st.write(activity["description"])
+
+            else:
+
+                st.warning(
+                    "No reading support recommendations are available for your classification."
+                )
+
+        else:
+
+            st.info(
+                "Complete a reading assessment first to receive personalized reading support."
+            )
+
 
         # STUDENT ASSESSMENT HISTORY
         st.divider()
