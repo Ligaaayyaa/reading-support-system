@@ -1815,7 +1815,7 @@ can create positive and lasting effects on the community and the environment.
                         st.success("Question deleted successfully!")
                         st.rerun()
 
-    # -----------------------------
+      # -----------------------------
     # DELETE ASSESSMENT CONFIRMATION
     # -----------------------------
     if st.session_state.pending_delete_id is not None:
@@ -1839,8 +1839,8 @@ can create positive and lasting effects on the community and the environment.
             )
 
             st.write(
-                "This action will remove the selected assessment "
-                "from the Saved Assessments list."
+                "This action will permanently remove this assessment "
+                "from the current Saved Assessments list."
             )
 
             confirm_col, cancel_col = st.columns(2)
@@ -1855,27 +1855,18 @@ can create positive and lasting effects on the community and the environment.
 
                     delete_id = st.session_state.pending_delete_id
 
-                    # Remove selected assessment
                     st.session_state.saved_assessments = [
                         item
                         for item in st.session_state.saved_assessments
                         if item["Assessment ID"] != delete_id
                     ]
 
-                    # Clear selected details
                     if st.session_state.selected_assessment_id == delete_id:
                         st.session_state.selected_assessment_id = None
 
-                    # Clear edit state if available
-                    if (
-                        "edit_assessment_id" in st.session_state
-                        and st.session_state.edit_assessment_id == delete_id
-                    ):
-                        st.session_state.edit_assessment_id = None
-
-                    # Clear pending deletion
                     st.session_state.pending_delete_id = None
 
+                    st.success("Assessment deleted successfully!")
                     st.rerun()
 
             with cancel_col:
