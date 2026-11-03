@@ -1280,11 +1280,8 @@ can create positive and lasting effects on the community and the environment.
                         st.error(
                             "Please complete the question and all four choices."
                         )
-                    else:
-                        st.error(
-                            "Please complete the question and all four choices."
-                        )
-                                # -----------------------------
+
+        # -----------------------------
         # SAVE ASSESSMENT AS NEW RECORD
         # -----------------------------
         st.markdown("---")
