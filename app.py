@@ -85,6 +85,14 @@ h1, h2, h3 {
     color: #30204F;
 }
 
+/* Top Header */
+.st-key-top_header {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EAE6EF;
+    padding: 12px 18px;
+    border-radius: 0;
+}
+
 /* Divider */
 hr {
     border-color: #EAE6EF;
@@ -165,32 +173,43 @@ page = st.session_state.current_page
 
 
 # ---------------------------------
-# TOP NAVBAR
+# TOP NAVBAR - UPDATED DESIGN ONLY
 # ---------------------------------
 
-st.container()
+with st.container(key="top_header"):
 
-left, right = st.columns([4, 1], vertical_alignment="center")
+    left, right = st.columns(
+        [4, 1],
+        vertical_alignment="center"
+    )
 
-with left:
-    logo, brand = st.columns([0.5, 5], vertical_alignment="center")
+    # LEFT SIDE: LOGO AND SYSTEM NAME
+    with left:
 
-    with logo:
-        st.markdown("# 📚")
+        logo, brand = st.columns(
+            [0.5, 5],
+            vertical_alignment="center"
+        )
 
-    with brand:
-        st.markdown("### Reading Support System")
+        with logo:
+            st.markdown("# 📚")
 
-with right:
-    profile, username = st.columns([1, 3], vertical_alignment="center")
+        with brand:
+            st.markdown("### Reading Support System")
 
-    with profile:
-        st.markdown("## 👤")
+    # RIGHT SIDE: ADMIN PROFILE
+    with right:
 
-    with username:
-        st.markdown("**Administrator**")
+        profile, username = st.columns(
+            [1, 3],
+            vertical_alignment="center"
+        )
 
-st.divider()
+        with profile:
+            st.markdown("## 👤")
+
+        with username:
+            st.markdown("**Administrator**")
 
 
 # ---------------------------------
