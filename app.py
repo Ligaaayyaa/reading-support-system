@@ -149,6 +149,13 @@ div.stButton > button:hover {
     color: white;
 }
 
+/* READING ASSESSMENT - BLACK CHOICE TEXT */
+div[data-testid="stRadio"] label,
+div[data-testid="stRadio"] label p,
+div[data-testid="stRadio"] label span {
+    color: #000000 !important;
+}
+
 /* MODERN MINIMALIST TOP HEADER */
 .top-header {
     width: 100%;
@@ -559,66 +566,49 @@ elif page == "Reading Assessment":
 
     st.markdown("---")
 
-    # READING PASSAGE
+    # READING PASSAGE - CLEAN ARTICLE FORMAT
     st.markdown("### 📖 Reading Passage")
 
     st.markdown("""
-    <div class="panel">
-        <h2 style="color:#493078;">
-            Small Actions, A Greener Future
-        </h2>
+    # Small Actions, A Greener Future
 
-        <p style="color:#9A90A7; font-size:12px;">
-            Topic: Environmental Awareness | Reading Level: Secondary Education
-        </p>
+    **Topic:** Environmental Awareness
 
-        <p style="line-height:1.9; text-align:justify;">
-            Environmental problems have become a major concern in many
-            communities. Issues such as plastic pollution, improper waste
-            disposal, and excessive energy consumption affect both people
-            and the natural environment. Although these problems may seem
-            difficult to solve, small actions performed by individuals can
-            contribute to meaningful improvements.
-        </p>
+    **Reading Level:** Secondary Education
 
-        <p style="line-height:1.9; text-align:justify;">
-            One practical way to protect the environment is through proper
-            waste management. Separating biodegradable, recyclable, and
-            non-recyclable materials helps reduce the amount of waste sent
-            to landfills. Reusing containers, bringing reusable bags, and
-            avoiding unnecessary single-use plastics are also simple habits
-            that can reduce pollution.
-        </p>
+    ---
 
-        <p style="line-height:1.9; text-align:justify;">
-            Technology can also support environmental protection. Mobile
-            applications and online platforms provide information about
-            recycling programs, environmental campaigns, and sustainable
-            practices. Schools can use digital tools to educate students
-            about environmental issues and encourage participation in
-            community activities. However, technology should be used
-            responsibly because electronic waste and excessive energy
-            consumption can create additional environmental challenges.
-        </p>
+    Environmental problems have become a major concern in many communities.
+    Issues such as plastic pollution, improper waste disposal, and excessive
+    energy consumption affect both people and the natural environment.
+    Although these problems may seem difficult to solve, small actions
+    performed by individuals can contribute to meaningful improvements.
 
-        <p style="line-height:1.9; text-align:justify;">
-            Students play an important role in promoting environmental
-            awareness. They can participate in clean-up drives, organize
-            recycling projects, and encourage their families and classmates
-            to practice responsible waste disposal. These activities develop
-            not only environmental responsibility but also cooperation,
-            leadership, and problem-solving skills.
-        </p>
+    One practical way to protect the environment is through proper waste
+    management. Separating biodegradable, recyclable, and non-recyclable
+    materials helps reduce the amount of waste sent to landfills. Reusing
+    containers, bringing reusable bags, and avoiding unnecessary single-use
+    plastics are also simple habits that can reduce pollution.
 
-        <p style="line-height:1.9; text-align:justify;">
-            Protecting the environment does not require one person to make
-            a dramatic change overnight. What matters is consistency and
-            collective effort. When individuals make responsible choices
-            and work together, small actions can create positive and lasting
-            effects on the community and the environment.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    Technology can also support environmental protection. Mobile applications
+    and online platforms provide information about recycling programs,
+    environmental campaigns, and sustainable practices. Schools can use
+    digital tools to educate students about environmental issues and encourage
+    participation in community activities. However, technology should be used
+    responsibly because electronic waste and excessive energy consumption can
+    create additional environmental challenges.
+
+    Students play an important role in promoting environmental awareness.
+    They can participate in clean-up drives, organize recycling projects,
+    and encourage their families and classmates to practice responsible waste
+    disposal. These activities develop not only environmental responsibility
+    but also cooperation, leadership, and problem-solving skills.
+
+    Protecting the environment does not require one person to make a dramatic
+    change overnight. What matters is consistency and collective effort.
+    When individuals make responsible choices and work together, small actions
+    can create positive and lasting effects on the community and the environment.
+    """)
 
     # INSTRUCTIONS
     st.markdown("### 📌 Assessment Instructions")
@@ -789,10 +779,16 @@ elif page == "Reading Assessment":
             use_container_width=True
         ):
 
-            if answered < len(questions):
+            # Recheck current answers when submitting
+            answered_now = sum(
+                1 for i in range(len(questions))
+                if st.session_state.get(f"question_{i}") is not None
+            )
+
+            if answered_now < len(questions):
                 st.warning(
                     f"Please answer all questions first. "
-                    f"You still have {len(questions) - answered} unanswered question(s)."
+                    f"You still have {len(questions) - answered_now} unanswered question(s)."
                 )
 
             else:
