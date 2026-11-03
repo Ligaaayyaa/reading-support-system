@@ -2034,6 +2034,9 @@ can create positive and lasting effects on the community and the environment.
                 st.caption(
                     "Manage the changes made to this assessment."
                 )
+                action_col1, action_col2, action_col3 = st.columns(
+                    [2, 1.5, 1]
+                )
 
                 # ==================================
 # ASSESSMENT STATUS MANAGEMENT
@@ -2097,12 +2100,6 @@ if st.button(
             f"Assessment status updated to {selected_status}."
         )
         st.rerun()
-
-                action_col1, action_col2, action_col3 = st.columns(
-                    [2, 1.5, 1]
-                )
-
-                # SAVE CHANGES - PRIMARY ACTION
     # SAVE CHANGES - PRIMARY ACTION
 with action_col1:
 
