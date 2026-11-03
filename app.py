@@ -1928,17 +1928,7 @@ can create positive and lasting effects on the community and the environment.
 
                             st.session_state.pending_delete_id = None
                             st.rerun()
-            # ==================================
-            # CLOSE DETAILS
-            # ==================================
-            if st.button(
-                "Close Details",
-                key=f"close_details_{assessment_id}",
-                use_container_width=True
-            ):
 
-                st.session_state.selected_assessment_id = None
-                st.rerun()
     # -----------------------------
     # DYNAMIC ASSESSMENT SUMMARY
     # -----------------------------
