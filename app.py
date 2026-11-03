@@ -545,6 +545,9 @@ if "teacher_records" not in st.session_state:
 if "assessment_results" not in st.session_state:
     st.session_state.assessment_results = []
 
+if "practice_results" not in st.session_state:
+    st.session_state.practice_results = []
+
 # ML prediction records
 if "ml_predictions" not in st.session_state:
     st.session_state.ml_predictions = []
@@ -1302,6 +1305,155 @@ elif page == "Student Dashboard":
             st.info(
                 "Complete a reading assessment first to receive personalized reading support."
             )
+
+        
+        # INTERACTIVE VOCABULARY BUILDING
+        st.divider()
+        st.subheader("✏️ Interactive Activity: Vocabulary Building")
+
+        st.write(
+            "Practice understanding English vocabulary through context clues."
+        )
+
+        vocabulary_questions = [
+            {
+                "question": "The room was enormous, with many tables and chairs. What does enormous mean?",
+                "options": ["Very small", "Very large", "Very dark", "Very clean"],
+                "answer": "Very large",
+                "explanation": "Enormous means extremely large."
+            },
+            {
+                "question": "Maria was exhausted after running for two hours. What does exhausted mean?",
+                "options": ["Very happy", "Very hungry", "Very tired", "Very excited"],
+                "answer": "Very tired",
+                "explanation": "Exhausted means extremely tired."
+            },
+            {
+                "question": "The instructions were simple, so everyone understood them. What does simple mean?",
+                "options": ["Easy to understand", "Difficult to follow", "Very expensive", "Unusual"],
+                "answer": "Easy to understand",
+                "explanation": "Simple means easy to understand or do."
+            }
+        ]
+
+        with st.expander("Open Vocabulary Building Exercise"):
+
+            st.markdown("### Instructions")
+            st.write(
+                "Read each sentence carefully. Use the context clues "
+                "to determine the meaning of the underlined vocabulary word."
+            )
+
+            with st.form(f"vocabulary_form_{student_id}"):
+
+                vocabulary_answers = []
+
+                for index, question in enumerate(vocabulary_questions):
+
+                    st.markdown(
+                        f"**Question {index + 1}. {question['question']}**"
+                    )
+
+                    answer = st.radio(
+                        "Choose your answer:",
+                        question["options"],
+                        index=None,
+                        key=f"vocabulary_answer_{student_id}_{index}"
+                    )
+
+                    vocabulary_answers.append(answer)
+
+                    st.divider()
+
+                submit_vocabulary = st.form_submit_button(
+                    "Submit Practice",
+                    use_container_width=True
+                )
+
+                if submit_vocabulary:
+
+                    if any(answer is None for answer in vocabulary_answers):
+
+                        st.error("Please answer all questions before submitting.")
+
+                    else:
+
+                        vocabulary_score = sum(
+                            1 for index, answer in enumerate(vocabulary_answers)
+                            if answer == vocabulary_questions[index]["answer"]
+                        )
+
+                        vocabulary_total = len(vocabulary_questions)
+
+                        practice_record = {
+                            "Student ID": student_id,
+                            "Student Name": selected_student["Full Name"],
+                            "Activity": "Vocabulary Building",
+                            "Score": vocabulary_score,
+                            "Total Questions": vocabulary_total,
+                            "Percentage": round(
+                                (vocabulary_score / vocabulary_total) * 100, 2
+                            ),
+                            "Submitted At": datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        }
+
+                        st.session_state.practice_results.append(practice_record)
+
+                        st.session_state[
+                            f"vocabulary_result_{student_id}"
+                        ] = {
+                            "score": vocabulary_score,
+                            "answers": vocabulary_answers
+                        }
+
+            # DISPLAY LATEST PRACTICE RESULT
+            latest_practice = st.session_state.get(
+                f"vocabulary_result_{student_id}"
+            )
+
+            if latest_practice:
+
+                st.divider()
+                st.markdown("### 📊 Your Practice Result")
+
+                score = latest_practice["score"]
+                total = len(vocabulary_questions)
+                percentage = (score / total) * 100
+
+                col1, col2 = st.columns(2)
+
+                col1.metric("Practice Score", f"{score}/{total}")
+                col2.metric("Percentage", f"{percentage:.2f}%")
+
+                if score == total:
+                    st.success("Excellent! You answered all questions correctly.")
+                elif score >= 2:
+                    st.info("Good job! Keep practicing your vocabulary.")
+                else:
+                    st.warning("Keep practicing. Review the explanations below.")
+
+                st.markdown("### Answer Review")
+
+                for index, question in enumerate(vocabulary_questions):
+
+                    student_answer = latest_practice["answers"][index]
+                    correct_answer = question["answer"]
+
+                    st.markdown(f"**Question {index + 1}**")
+
+                    if student_answer == correct_answer:
+
+                        st.success(f"Correct: {correct_answer}")
+
+                    else:
+
+                        st.error(f"Your answer: {student_answer}")
+                        st.info(f"Correct answer: {correct_answer}")
+
+                    st.caption(question["explanation"])
+
 
 
         # STUDENT ASSESSMENT HISTORY
