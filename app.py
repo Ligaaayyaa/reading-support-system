@@ -1815,6 +1815,72 @@ can create positive and lasting effects on the community and the environment.
                         st.success("Question deleted successfully!")
                         st.rerun()
 
+                # ==================================
+            # SAVE ASSESSMENT CHANGES
+            # ==================================
+            st.markdown("---")
+
+            st.markdown("### 💾 Save Assessment Changes")
+
+            st.caption(
+                "Save the latest updates made to the passage information, "
+                "reading material, and comprehension questions."
+            )
+
+            if st.button(
+                "💾 Save Assessment Changes",
+                key=f"save_assessment_changes_{assessment_id}",
+                use_container_width=True
+            ):
+
+                for assessment in st.session_state.saved_assessments:
+
+                    if assessment["Assessment ID"] == assessment_id:
+
+                        assessment["Total Questions"] = len(
+                            assessment["Questions"]
+                        )
+
+                        assessment["Status"] = "Saved"
+
+                        break
+
+                st.success("Assessment changes saved successfully!")
+                st.rerun()
+
+            # ==================================
+            # DELETE ENTIRE ASSESSMENT
+            # ==================================
+            st.markdown("---")
+
+            st.markdown("### 🗑️ Delete Assessment")
+
+            st.warning(
+                "Deleting this assessment will remove its passage, "
+                "reading material, and all associated questions."
+            )
+
+            if st.button(
+                "🗑️ Delete This Assessment",
+                key=f"delete_assessment_{assessment_id}",
+                use_container_width=True
+            ):
+
+                st.session_state.pending_delete_id = assessment_id
+                st.rerun()
+
+            # ==================================
+            # CLOSE DETAILS
+            # ==================================
+            if st.button(
+                "Close Details",
+                key=f"close_details_{assessment_id}",
+                use_container_width=True
+            ):
+
+                st.session_state.selected_assessment_id = None
+                st.rerun()
+
       # -----------------------------
     # DELETE ASSESSMENT CONFIRMATION
     # -----------------------------
@@ -1833,6 +1899,8 @@ can create positive and lasting effects on the community and the environment.
         if assessment_to_delete:
 
             st.markdown("---")
+            st.markdown("### ⚠️ Confirm Assessment Deletion")
+
             st.warning(
                 f"Are you sure you want to delete "
                 f"'{assessment_to_delete['Passage Title']}'?"
@@ -1840,12 +1908,13 @@ can create positive and lasting effects on the community and the environment.
 
             st.write(
                 "This action will permanently remove this assessment "
-                "from the current Saved Assessments list."
+                "and all its associated questions from the current session."
             )
 
             confirm_col, cancel_col = st.columns(2)
 
             with confirm_col:
+
                 if st.button(
                     "Yes, Delete Assessment",
                     key="confirm_delete_assessment",
@@ -1870,11 +1939,13 @@ can create positive and lasting effects on the community and the environment.
                     st.rerun()
 
             with cancel_col:
+
                 if st.button(
                     "Cancel",
                     key="cancel_delete_assessment",
                     use_container_width=True
                 ):
+
                     st.session_state.pending_delete_id = None
                     st.rerun()
 
