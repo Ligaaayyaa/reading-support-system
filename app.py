@@ -644,17 +644,21 @@ elif page == "Teacher Dashboard":
 
 
 
+
 # -----------------------------
 # ADMIN - ASSESSMENT MANAGEMENT
+# 3-STEP WIZARD
 # -----------------------------
 elif page == "Reading Assessment":
 
     st.title("📝 Assessment Management")
     st.caption(
-        "Create, organize, and manage English reading assessment content."
+        "Create and manage English reading assessments through a guided process."
     )
 
-    # DEFAULT PASSAGE
+    # -----------------------------
+    # DEFAULT CONTENT
+    # -----------------------------
     default_passage = """
 Environmental problems have become a major concern in many communities.
 Issues such as plastic pollution, improper waste disposal, and excessive
@@ -779,158 +783,24 @@ can create positive and lasting effects on the community and the environment.
         }
     ]
 
-    # INITIALIZE ADMIN SESSION STATE
-    if "admin_questions" not in st.session_state:
-        st.session_state.admin_questions = [
+    # -----------------------------
+    # INITIALIZE SESSION STATE
+    # -----------------------------
+    defaults = {
+        "admin_questions": [
             question.copy() for question in default_questions
-        ]
+        ],
+        "admin_passage_title": "Small Actions, A Greener Future",
+        "admin_passage_topic": "Environmental Awareness",
+        "admin_passage_level": "Secondary Education",
+        "admin_passage_content": default_passage,
+        "passage_info_saved": False,
+        "reading_material_saved": False
+    }
 
-    if "admin_passage_title" not in st.session_state:
-        st.session_state.admin_passage_title = "Small Actions, A Greener Future"
-
-    if "admin_passage_topic" not in st.session_state:
-        st.session_state.admin_passage_topic = "Environmental Awareness"
-
-    if "admin_passage_level" not in st.session_state:
-        st.session_state.admin_passage_level = "Secondary Education"
-
-    if "admin_passage_content" not in st.session_state:
-        st.session_state.admin_passage_content = default_passage
-
-    # ADMIN SUMMARY
-    total_questions = len(st.session_state.admin_questions)
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.markdown(f"""
-        <div class="stat-card">
-            <div class="stat-name">📚 Reading Passages</div>
-            <div class="stat-number">1</div>
-            <div class="stat-note">Available passage</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(f"""
-        <div class="stat-card">
-            <div class="stat-name">📝 Total Questions</div>
-            <div class="stat-number">{total_questions}</div>
-            <div class="stat-note">Questions in this assessment</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col3:
-        st.markdown("""
-        <div class="stat-card">
-            <div class="stat-name">📊 Assessment Status</div>
-            <div class="stat-number" style="font-size:23px;">Draft</div>
-            <div class="stat-note">Demonstration content</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # READING PASSAGE MANAGEMENT
-    st.markdown("## 📖 Reading Passage Management")
-    st.caption("Manage the reading material used in the assessment.")
-
-    with st.container(border=True):
-
-        st.markdown("### Passage Information")
-
-        st.markdown(
-            f"**Title:** {st.session_state.admin_passage_title}"
-        )
-        st.markdown(
-            f"**Topic:** {st.session_state.admin_passage_topic}"
-        )
-        st.markdown(
-            f"**Reading Level:** {st.session_state.admin_passage_level}"
-        )
-
-        st.divider()
-
-        st.markdown("### Reading Material")
-
-        st.markdown(
-            f"## {st.session_state.admin_passage_title}"
-        )
-
-        st.caption(
-            f"{st.session_state.admin_passage_topic} | "
-            f"{st.session_state.admin_passage_level}"
-        )
-
-        st.markdown(st.session_state.admin_passage_content)
-
-        with st.expander("✏️ Edit Reading Passage"):
-
-            with st.form("edit_passage_form"):
-
-                new_title = st.text_input(
-                    "Passage Title",
-                    value=st.session_state.admin_passage_title
-                )
-
-                new_topic = st.text_input(
-                    "Topic",
-                    value=st.session_state.admin_passage_topic
-                )
-
-                level_options = [
-                    "Elementary",
-                    "Junior High School",
-                    "Secondary Education",
-                    "Senior High School"
-                ]
-
-                current_level = st.session_state.admin_passage_level
-
-                new_level = st.selectbox(
-                    "Reading Level",
-                    level_options,
-                    index=(
-                        level_options.index(current_level)
-                        if current_level in level_options else 2
-                    )
-                )
-
-                new_content = st.text_area(
-                    "Passage Content",
-                    value=st.session_state.admin_passage_content,
-                    height=300
-                )
-
-                save_passage = st.form_submit_button(
-                    "Save Passage Changes",
-                    use_container_width=True
-                )
-
-                if save_passage:
-
-                    if new_title.strip() and new_content.strip():
-
-                        st.session_state.admin_passage_title = new_title
-                        st.session_state.admin_passage_topic = new_topic
-                        st.session_state.admin_passage_level = new_level
-                        st.session_state.admin_passage_content = new_content
-
-                        st.success("Reading passage updated successfully.")
-                        st.rerun()
-
-                    else:
-                        st.error(
-                            "Please provide a passage title and content."
-                        )
-
-    st.markdown("---")
-
-    # QUESTION MANAGEMENT
-    st.markdown("## 📝 Question Management")
-    st.caption(
-        "Manage comprehension questions, answer choices, and correct answers."
-    )
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
     skill_options = [
         "Main Idea",
@@ -942,170 +812,441 @@ can create positive and lasting effects on the community and the environment.
         "Conclusion"
     ]
 
-    for i, item in enumerate(st.session_state.admin_questions):
+    level_options = [
+        "Elementary",
+        "Junior High School",
+        "Secondary Education",
+        "Senior High School"
+    ]
 
-        with st.expander(
-            f"Question {i + 1} — {item['skill']}"
-        ):
+    # -----------------------------
+    # WIZARD PROGRESS
+    # -----------------------------
+    st.markdown("## Assessment Creation Wizard")
 
-            st.markdown(f"**{item['question']}**")
-            st.markdown("**Answer Choices:**")
+    step1_done = st.session_state.passage_info_saved
+    step2_done = st.session_state.reading_material_saved
 
-            for option in item["options"]:
+    current_step = (
+        3 if step2_done
+        else 2 if step1_done
+        else 1
+    )
 
-                if option == item["answer"]:
-                    st.markdown(
-                        f"<span style='color:green; font-weight:700;'>"
-                        f"✓ {option} — Correct Answer</span>",
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.markdown(
-                        f"<span style='color:#000000;'>{option}</span>",
-                        unsafe_allow_html=True
-                    )
+    progress_col1, progress_col2, progress_col3 = st.columns(3)
 
-            st.caption(f"Question Skill: {item['skill']}")
+    with progress_col1:
+        st.markdown(
+            f"### {'✅' if step1_done else '🟣'} Step 1"
+        )
+        st.caption("Passage Information")
 
-            with st.form(f"edit_question_form_{i}"):
+    with progress_col2:
+        st.markdown(
+            f"### {'✅' if step2_done else '🟣' if step1_done else '🔒'} Step 2"
+        )
+        st.caption("Reading Material")
 
-                current_skill_index = (
-                    skill_options.index(item["skill"])
-                    if item["skill"] in skill_options else 0
-                )
+    with progress_col3:
+        st.markdown(
+            f"### {'🟣' if step2_done else '🔒'} Step 3"
+        )
+        st.caption("Comprehension Questions")
 
-                edited_skill = st.selectbox(
-                    "Question Skill",
-                    skill_options,
-                    index=current_skill_index
-                )
+    st.progress(current_step / 3)
 
-                edited_question = st.text_input(
-                    "Question",
-                    value=item["question"]
-                )
+    st.divider()
 
-                edited_options = []
+    # -----------------------------
+    # STEP 1: PASSAGE INFORMATION
+    # -----------------------------
+    st.markdown("## 1. 📚 Passage Information")
 
-                for j, option in enumerate(item["options"]):
+    st.caption(
+        "Enter the basic information about the reading passage. "
+        "Complete this section before proceeding to the reading material."
+    )
 
-                    edited_options.append(
-                        st.text_input(
-                            f"Choice {chr(65 + j)}",
-                            value=option
-                        )
-                    )
-
-                current_answer_index = item["options"].index(
-                    item["answer"]
-                )
-
-                edited_answer = st.selectbox(
-                    "Correct Answer",
-                    options=[0, 1, 2, 3],
-                    index=current_answer_index,
-                    format_func=lambda x: f"Choice {chr(65 + x)}"
-                )
-
-                save_question = st.form_submit_button(
-                    "Save Question Changes",
-                    use_container_width=True
-                )
-
-                if save_question:
-
-                    if (
-                        edited_question.strip()
-                        and all(option.strip() for option in edited_options)
-                    ):
-
-                        st.session_state.admin_questions[i] = {
-                            "skill": edited_skill,
-                            "question": edited_question,
-                            "options": edited_options,
-                            "answer": edited_options[edited_answer]
-                        }
-
-                        st.success("Question updated successfully.")
-                        st.rerun()
-
-                    else:
-                        st.error(
-                            "Please complete the question and all choices."
-                        )
-
-            if st.button(
-                "Delete Question",
-                key=f"delete_admin_question_{i}"
-            ):
-
-                st.session_state.admin_questions.pop(i)
-                st.success("Question deleted successfully.")
-                st.rerun()
-
-    # ADD NEW QUESTION
-    st.markdown("---")
-    st.markdown("## ➕ Add New Question")
-    st.caption("Create another comprehension question for this passage.")
+    if step1_done:
+        st.success("Passage Information has been saved.")
 
     with st.container(border=True):
 
-        with st.form("add_new_question_form"):
+        with st.form("passage_information_form"):
 
-            new_skill = st.selectbox(
-                "Question Skill",
-                skill_options,
-                key="new_question_skill"
+            passage_title = st.text_input(
+                "Passage Title",
+                value=st.session_state.admin_passage_title
             )
 
-            new_question = st.text_input(
-                "Question",
-                key="new_question_text"
+            passage_topic = st.text_input(
+                "Topic",
+                value=st.session_state.admin_passage_topic
             )
 
-            new_options = []
+            current_level = st.session_state.admin_passage_level
 
-            for i in range(4):
-
-                new_options.append(
-                    st.text_input(
-                        f"Choice {chr(65 + i)}",
-                        key=f"new_question_choice_{i}"
-                    )
+            passage_level = st.selectbox(
+                "Reading Level",
+                level_options,
+                index=(
+                    level_options.index(current_level)
+                    if current_level in level_options else 2
                 )
-
-            new_correct_answer = st.selectbox(
-                "Correct Answer",
-                options=[0, 1, 2, 3],
-                format_func=lambda x: f"Choice {chr(65 + x)}"
             )
 
-            add_question = st.form_submit_button(
-                "Add Question",
+            save_passage_info = st.form_submit_button(
+                "Save Passage Information",
                 use_container_width=True
             )
 
-            if add_question:
+            if save_passage_info:
 
-                if (
-                    new_question.strip()
-                    and all(option.strip() for option in new_options)
-                ):
+                if passage_title.strip() and passage_topic.strip():
 
-                    st.session_state.admin_questions.append({
-                        "skill": new_skill,
-                        "question": new_question,
-                        "options": new_options,
-                        "answer": new_options[new_correct_answer]
-                    })
+                    st.session_state.admin_passage_title = passage_title.strip()
+                    st.session_state.admin_passage_topic = passage_topic.strip()
+                    st.session_state.admin_passage_level = passage_level
 
-                    st.success("New question added successfully.")
+                    st.session_state.passage_info_saved = True
+
+                    # Require reading material to be reviewed again
+                    # whenever passage information is saved.
+                    st.session_state.reading_material_saved = False
+
+                    st.success(
+                        "Passage Information saved successfully! "
+                        "You may now proceed to Step 2."
+                    )
                     st.rerun()
 
                 else:
                     st.error(
-                        "Please complete the question and all four choices."
+                        "Please complete the Passage Title and Topic."
                     )
+
+    # -----------------------------
+    # STEP 2: READING MATERIAL
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("## 2. 📖 Reading Material")
+
+    if not st.session_state.passage_info_saved:
+
+        st.warning(
+            "🔒 This section is locked. Please complete and save "
+            "Step 1: Passage Information first."
+        )
+
+    else:
+
+        st.caption(
+            "Enter the actual reading passage that students will read "
+            "during the assessment."
+        )
+
+        if step2_done:
+            st.success("Reading Material has been saved.")
+
+        with st.container(border=True):
+
+            st.markdown(
+                f"**Passage:** {st.session_state.admin_passage_title}"
+            )
+            st.markdown(
+                f"**Topic:** {st.session_state.admin_passage_topic}"
+            )
+            st.markdown(
+                f"**Reading Level:** {st.session_state.admin_passage_level}"
+            )
+
+            st.divider()
+
+            with st.form("reading_material_form"):
+
+                reading_content = st.text_area(
+                    "Reading Passage Content",
+                    value=st.session_state.admin_passage_content,
+                    height=350,
+                    help="Enter the complete reading passage here."
+                )
+
+                save_reading_material = st.form_submit_button(
+                    "Save Reading Material",
+                    use_container_width=True
+                )
+
+                if save_reading_material:
+
+                    if reading_content.strip():
+
+                        st.session_state.admin_passage_content = reading_content.strip()
+                        st.session_state.reading_material_saved = True
+
+                        st.success(
+                            "Reading Material saved successfully! "
+                            "You may now proceed to Step 3."
+                        )
+                        st.rerun()
+
+                    else:
+                        st.error(
+                            "Please enter the reading passage before saving."
+                        )
+
+            if st.session_state.reading_material_saved:
+
+                with st.expander("👁️ Preview Saved Reading Material"):
+
+                    st.markdown(
+                        f"### {st.session_state.admin_passage_title}"
+                    )
+                    st.caption(
+                        f"{st.session_state.admin_passage_topic} | "
+                        f"{st.session_state.admin_passage_level}"
+                    )
+                    st.write(st.session_state.admin_passage_content)
+
+    # -----------------------------
+    # STEP 3: COMPREHENSION QUESTIONS
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("## 3. 📝 Comprehension Questions")
+
+    if not st.session_state.passage_info_saved:
+
+        st.warning(
+            "🔒 Questions are locked. Please complete Step 1 first."
+        )
+
+    elif not st.session_state.reading_material_saved:
+
+        st.warning(
+            "🔒 Questions are locked. Please save the Reading Material "
+            "in Step 2 before creating comprehension questions."
+        )
+
+    else:
+
+        st.success(
+            "All required sections are complete. "
+            "You can now manage comprehension questions."
+        )
+
+        st.caption(
+            "Add, edit, or delete questions, answer choices, "
+            "and correct answers for this reading passage."
+        )
+
+        # -----------------------------
+        # EXISTING QUESTIONS
+        # -----------------------------
+        st.markdown("### Existing Questions")
+
+        total_questions = len(st.session_state.admin_questions)
+
+        if total_questions == 0:
+            st.info("No comprehension questions have been added yet.")
+
+        for i, item in enumerate(st.session_state.admin_questions):
+
+            with st.expander(
+                f"Question {i + 1} — {item['skill']}"
+            ):
+
+                st.markdown(f"**{item['question']}**")
+                st.markdown("**Answer Choices:**")
+
+                for option in item["options"]:
+
+                    if option == item["answer"]:
+                        st.markdown(
+                            f"<span style='color:green; font-weight:700;'>"
+                            f"✓ {option} — Correct Answer</span>",
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.markdown(
+                            f"<span style='color:#1F2937;'>{option}</span>",
+                            unsafe_allow_html=True
+                        )
+
+                st.caption(f"Question Skill: {item['skill']}")
+
+                with st.form(f"edit_question_form_{i}"):
+
+                    current_skill_index = (
+                        skill_options.index(item["skill"])
+                        if item["skill"] in skill_options else 0
+                    )
+
+                    edited_skill = st.selectbox(
+                        "Question Skill",
+                        skill_options,
+                        index=current_skill_index
+                    )
+
+                    edited_question = st.text_input(
+                        "Question",
+                        value=item["question"]
+                    )
+
+                    edited_options = []
+
+                    for j, option in enumerate(item["options"]):
+
+                        edited_options.append(
+                            st.text_input(
+                                f"Choice {chr(65 + j)}",
+                                value=option
+                            )
+                        )
+
+                    current_answer_index = item["options"].index(
+                        item["answer"]
+                    )
+
+                    edited_answer = st.selectbox(
+                        "Correct Answer",
+                        options=[0, 1, 2, 3],
+                        index=current_answer_index,
+                        format_func=lambda x: f"Choice {chr(65 + x)}"
+                    )
+
+                    save_question = st.form_submit_button(
+                        "Save Question Changes",
+                        use_container_width=True
+                    )
+
+                    if save_question:
+
+                        if (
+                            edited_question.strip()
+                            and all(option.strip() for option in edited_options)
+                        ):
+
+                            st.session_state.admin_questions[i] = {
+                                "skill": edited_skill,
+                                "question": edited_question.strip(),
+                                "options": [
+                                    option.strip()
+                                    for option in edited_options
+                                ],
+                                "answer": edited_options[edited_answer].strip()
+                            }
+
+                            st.success("Question updated successfully.")
+                            st.rerun()
+
+                        else:
+                            st.error(
+                                "Please complete the question and all choices."
+                            )
+
+                if st.button(
+                    "🗑️ Delete Question",
+                    key=f"delete_admin_question_{i}"
+                ):
+
+                    st.session_state.admin_questions.pop(i)
+                    st.success("Question deleted successfully.")
+                    st.rerun()
+
+        # -----------------------------
+        # ADD NEW QUESTION
+        # -----------------------------
+        st.markdown("---")
+        st.markdown("### ➕ Add New Question")
+
+        with st.container(border=True):
+
+            with st.form("add_new_question_form"):
+
+                new_skill = st.selectbox(
+                    "Question Skill",
+                    skill_options,
+                    key="new_question_skill"
+                )
+
+                new_question = st.text_input(
+                    "Question",
+                    key="new_question_text"
+                )
+
+                new_options = []
+
+                for i in range(4):
+
+                    new_options.append(
+                        st.text_input(
+                            f"Choice {chr(65 + i)}",
+                            key=f"new_question_choice_{i}"
+                        )
+                    )
+
+                new_correct_answer = st.selectbox(
+                    "Correct Answer",
+                    options=[0, 1, 2, 3],
+                    format_func=lambda x: f"Choice {chr(65 + x)}",
+                    key="new_correct_answer"
+                )
+
+                add_question = st.form_submit_button(
+                    "➕ Add Question",
+                    use_container_width=True
+                )
+
+                if add_question:
+
+                    if (
+                        new_question.strip()
+                        and all(option.strip() for option in new_options)
+                    ):
+
+                        st.session_state.admin_questions.append({
+                            "skill": new_skill,
+                            "question": new_question.strip(),
+                            "options": [
+                                option.strip()
+                                for option in new_options
+                            ],
+                            "answer": new_options[new_correct_answer].strip()
+                        })
+
+                        st.success("New question added successfully.")
+                        st.rerun()
+
+                    else:
+                        st.error(
+                            "Please complete the question and all four choices."
+                        )
+
+    # -----------------------------
+    # ADMIN SUMMARY
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("### 📊 Assessment Summary")
+
+    summary_col1, summary_col2, summary_col3 = st.columns(3)
+
+    with summary_col1:
+        st.metric(
+            "Passage Information",
+            "Completed" if st.session_state.passage_info_saved else "Pending"
+        )
+
+    with summary_col2:
+        st.metric(
+            "Reading Material",
+            "Completed" if st.session_state.reading_material_saved else "Pending"
+        )
+
+    with summary_col3:
+        st.metric(
+            "Comprehension Questions",
+            len(st.session_state.admin_questions)
+            if st.session_state.reading_material_saved else "Locked"
+        )
 
     st.caption(
         "Administrator content management prototype. Changes are stored "
