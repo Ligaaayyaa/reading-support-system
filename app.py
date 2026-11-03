@@ -1344,62 +1344,136 @@ can create positive and lasting effects on the community and the environment.
                 st.success("New assessment saved successfully!")
                 st.rerun()
 
-    # -----------------------------
-    # SAVED ASSESSMENTS TABLE
-    # -----------------------------
-    st.markdown("---")
-    st.markdown("## 📋 Saved Assessments")
+# ==========================================
+# SAVED ASSESSMENTS MANAGEMENT
+# ==========================================
 
-    if st.session_state.saved_assessments:
+st.markdown("---")
+st.markdown("## 📋 Saved Assessments")
+st.caption("View and manage all assessments created by the administrator.")
 
-        assessment_table = []
+if "selected_assessment_id" not in st.session_state:
+    st.session_state.selected_assessment_id = None
 
-        for assessment in st.session_state.saved_assessments:
-            assessment_table.append({
-                "Assessment ID": assessment["Assessment ID"],
-                "Passage Title": assessment["Passage Title"],
-                "Topic": assessment["Topic"],
-                "Reading Level": assessment["Reading Level"],
-                "Total Questions": assessment["Total Questions"],
-                "Status": assessment["Status"]
-            })
+if st.session_state.saved_assessments:
 
-        st.dataframe(
-            pd.DataFrame(assessment_table),
-            use_container_width=True,
-            hide_index=True
+    # Table Headers
+    header_cols = st.columns([0.7, 2, 1.5, 1, 1.2, 1.5])
+
+    header_cols[0].markdown("**ID**")
+    header_cols[1].markdown("**Passage Title**")
+    header_cols[2].markdown("**Reading Level**")
+    header_cols[3].markdown("**Questions**")
+    header_cols[4].markdown("**Status**")
+    header_cols[5].markdown("**Action**")
+
+    st.divider()
+
+    # Assessment Records
+    for assessment in st.session_state.saved_assessments:
+
+        cols = st.columns([0.7, 2, 1.5, 1, 1.2, 1.5])
+
+        cols[0].write(assessment["Assessment ID"])
+        cols[1].write(assessment["Passage Title"])
+        cols[2].write(assessment["Reading Level"])
+        cols[3].write(assessment["Total Questions"])
+        cols[4].write(assessment["Status"])
+
+        if cols[5].button(
+            "View Details",
+            key=f"view_assessment_{assessment['Assessment ID']}",
+            use_container_width=True
+        ):
+            st.session_state.selected_assessment_id = assessment["Assessment ID"]
+            st.rerun()
+
+    # ==========================================
+    # VIEW SELECTED ASSESSMENT DETAILS
+    # ==========================================
+
+    selected_assessment = next(
+        (
+            assessment
+            for assessment in st.session_state.saved_assessments
+            if assessment["Assessment ID"]
+            == st.session_state.selected_assessment_id
+        ),
+        None
+    )
+
+    if selected_assessment:
+
+        st.markdown("---")
+        st.markdown("## 📖 Assessment Details")
+
+        st.markdown(
+            f"### {selected_assessment['Passage Title']}"
         )
 
-        st.markdown("### View Assessment Details")
+        detail_cols = st.columns(3)
 
-        for assessment in st.session_state.saved_assessments:
+        detail_cols[0].metric(
+            "Assessment ID",
+            selected_assessment["Assessment ID"]
+        )
+
+        detail_cols[1].metric(
+            "Reading Level",
+            selected_assessment["Reading Level"]
+        )
+
+        detail_cols[2].metric(
+            "Total Questions",
+            selected_assessment["Total Questions"]
+        )
+
+        st.markdown("### Passage Information")
+
+        st.write(f"**Passage Title:** {selected_assessment['Passage Title']}")
+        st.write(f"**Topic:** {selected_assessment['Topic']}")
+        st.write(f"**Reading Level:** {selected_assessment['Reading Level']}")
+        st.write(f"**Status:** {selected_assessment['Status']}")
+
+        st.markdown("### Reading Material")
+
+        st.markdown(
+            selected_assessment["Reading Material"]
+        )
+
+        st.markdown("### Comprehension Questions")
+
+        for index, question in enumerate(
+            selected_assessment["Questions"], start=1
+        ):
 
             with st.expander(
-                f"Assessment {assessment['Assessment ID']} — "
-                f"{assessment['Passage Title']}"
+                f"Question {index}: {question['skill']}"
             ):
-                st.write(f"**Topic:** {assessment['Topic']}")
-                st.write(f"**Reading Level:** {assessment['Reading Level']}")
-                st.write(f"**Total Questions:** {assessment['Total Questions']}")
 
-                st.markdown("**Reading Material**")
-                st.write(assessment["Reading Material"])
+                st.write(f"**Question:** {question['question']}")
 
-                st.markdown("**Comprehension Questions**")
-
-                for index, question in enumerate(
-                    assessment["Questions"], start=1
+                for option_index, option in enumerate(
+                    question["options"]
                 ):
-                    st.markdown(f"**{index}. {question['question']}**")
-                    st.caption(f"Skill: {question['skill']}")
+                    st.write(
+                        f"{chr(65 + option_index)}. {option}"
+                    )
 
-                    for option in question["options"]:
-                        st.write(f"- {option}")
+                st.write(
+                    f"**Correct Answer:** "
+                    f"{question['options'][question['correct_answer']]}"
+                )
 
-                    st.write(f"Correct Answer: {question['answer']}")
+        if st.button(
+            "Close Details",
+            key="close_assessment_details"
+        ):
+            st.session_state.selected_assessment_id = None
+            st.rerun()
 
-    else:
-        st.info("No saved assessments yet.")
+else:
+    st.info("No saved assessments yet.")
 
     # -----------------------------
     # ADMIN SUMMARY
