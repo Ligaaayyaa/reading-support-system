@@ -145,6 +145,26 @@ div.stButton > button:hover {
     color: white;
 }
 
+/* UPDATED TOP HEADER */
+.st-key-top_header {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EAE4F2;
+    padding: 10px 20px;
+    border-radius: 0;
+    margin-bottom: 18px;
+}
+
+.st-key-top_header h1,
+.st-key-top_header h2,
+.st-key-top_header h3 {
+    color: #493078;
+    margin: 0;
+}
+
+.st-key-top_header [data-testid="stMarkdownContainer"] p {
+    margin-bottom: 0;
+}
+
 .footer {
     text-align: center;
     color: #968BA4;
@@ -220,31 +240,43 @@ page = st.session_state.current_page
 
 
 # -----------------------------
-# TOP HEADER
+# TOP HEADER - UPDATED DESIGN
 # -----------------------------
-left, right = st.columns([4, 1])
 
-with left:
-    st.markdown(
-        '<div class="top-label">ACADEMIC LEARNING PLATFORM</div>',
-        unsafe_allow_html=True
+with st.container(key="top_header"):
+
+    left, right = st.columns(
+        [5, 1],
+        vertical_alignment="center"
     )
 
-    st.markdown(
-        '<div class="main-heading">Reading Support System</div>',
-        unsafe_allow_html=True
-    )
+    # LEFT: SYSTEM LOGO AND NAME
+    with left:
 
-    st.markdown(
-        '<div class="sub-heading">Reading performance and personalized learning support</div>',
-        unsafe_allow_html=True
-    )
+        logo, company_name = st.columns(
+            [0.4, 5],
+            vertical_alignment="center"
+        )
 
-with right:
-    st.markdown(" ")
-    st.markdown("**👤 Administrator**")
+        with logo:
+            st.markdown("## 📚")
 
-st.divider()
+        with company_name:
+            st.markdown("### Reading Support System")
+
+    # RIGHT: ADMINISTRATOR PROFILE
+    with right:
+
+        profile_icon, username = st.columns(
+            [0.8, 2.5],
+            vertical_alignment="center"
+        )
+
+        with profile_icon:
+            st.markdown("## 👤")
+
+        with username:
+            st.markdown("**Administrator**")
 
 
 # -----------------------------
