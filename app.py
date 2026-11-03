@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 
@@ -27,10 +26,11 @@ st.markdown("""
 }
 
 .block-container {
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     padding-bottom: 2rem;
 }
 
+/* EXISTING TEXT STYLES */
 .top-label {
     color: #8A7AA7;
     font-size: 13px;
@@ -48,6 +48,7 @@ st.markdown("""
     font-size: 14px;
 }
 
+/* HERO BANNER */
 .hero {
     background: linear-gradient(110deg,#493078,#7956B5);
     border-radius: 18px;
@@ -66,6 +67,7 @@ st.markdown("""
     margin-bottom: 0;
 }
 
+/* STAT CARDS */
 .stat-card {
     background: white;
     border: 1px solid #EAE4F2;
@@ -92,6 +94,7 @@ st.markdown("""
     font-size: 11px;
 }
 
+/* PANELS */
 .panel {
     background: white;
     border: 1px solid #EAE4F2;
@@ -145,26 +148,120 @@ div.stButton > button:hover {
     color: white;
 }
 
-/* UPDATED TOP HEADER */
-.st-key-top_header {
-    background-color: #FFFFFF;
-    border-bottom: 1px solid #EAE4F2;
-    padding: 10px 20px;
-    border-radius: 0;
-    margin-bottom: 18px;
+/* -----------------------------
+   MODERN MINIMALIST TOP HEADER
+----------------------------- */
+
+.top-header {
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid #F0ECF7;
+    border-radius: 18px;
+    padding: 16px 26px;
+    box-shadow: 0 4px 18px rgba(48, 32, 79, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    margin-bottom: 25px;
 }
 
-.st-key-top_header h1,
-.st-key-top_header h2,
-.st-key-top_header h3 {
-    color: #493078;
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.system-logo {
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #9560D8, #492477);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 30px;
+}
+
+.system-name {
+    color: #30204F;
+    font-size: 25px;
+    font-weight: 750;
     margin: 0;
+    padding: 0;
+    line-height: 1.3;
 }
 
-.st-key-top_header [data-testid="stMarkdownContainer"] p {
-    margin-bottom: 0;
+.header-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 15px;
 }
 
+.profile-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: #E9DDFB;
+    color: #492477;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+}
+
+.profile-name {
+    color: #777184;
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* RESPONSIVE HEADER */
+@media (max-width: 600px) {
+    .top-header {
+        padding: 13px 15px;
+        border-radius: 14px;
+    }
+
+    .header-left {
+        gap: 10px;
+    }
+
+    .system-logo {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        font-size: 23px;
+        border-radius: 11px;
+    }
+
+    .system-name {
+        font-size: 16px;
+    }
+
+    .header-profile {
+        gap: 7px;
+        margin-left: 8px;
+    }
+
+    .profile-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 18px;
+    }
+
+    .profile-name {
+        font-size: 12px;
+    }
+}
+
+/* FOOTER */
 .footer {
     text-align: center;
     color: #968BA4;
@@ -240,43 +337,38 @@ page = st.session_state.current_page
 
 
 # -----------------------------
-# TOP HEADER - UPDATED DESIGN
+# TOP HEADER - MODERN DESIGN
 # -----------------------------
 
-with st.container(key="top_header"):
+st.markdown("""
+<div class="top-header">
 
-    left, right = st.columns(
-        [5, 1],
-        vertical_alignment="center"
-    )
+    <div class="header-left">
 
-    # LEFT: SYSTEM LOGO AND NAME
-    with left:
+        <div class="system-logo">
+            📖
+        </div>
 
-        logo, company_name = st.columns(
-            [0.4, 5],
-            vertical_alignment="center"
-        )
+        <h2 class="system-name">
+            Reading Support System
+        </h2>
 
-        with logo:
-            st.markdown("## 📚")
+    </div>
 
-        with company_name:
-            st.markdown("### Reading Support System")
+    <div class="header-profile">
 
-    # RIGHT: ADMINISTRATOR PROFILE
-    with right:
+        <div class="profile-icon">
+            👤
+        </div>
 
-        profile_icon, username = st.columns(
-            [0.8, 2.5],
-            vertical_alignment="center"
-        )
+        <span class="profile-name">
+            Administrator
+        </span>
 
-        with profile_icon:
-            st.markdown("## 👤")
+    </div>
 
-        with username:
-            st.markdown("**Administrator**")
+</div>
+""", unsafe_allow_html=True)
 
 
 # -----------------------------
