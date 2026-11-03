@@ -860,6 +860,9 @@ can create positive and lasting effects on the community and the environment.
     if "saved_assessments" not in st.session_state:
         st.session_state.saved_assessments = []
 
+    if "pending_delete_id" not in st.session_state:
+        st.session_state.pending_delete_id = None
+
     skill_options = [
         "Main Idea",
         "Vocabulary",
@@ -1794,21 +1797,80 @@ can create positive and lasting effects on the community and the environment.
                         st.success("Question deleted successfully!")
                         st.rerun()
 
-            # ==================================
-            # DELETE ENTIRE ASSESSMENT
-            # ==================================
+             # -----------------------------
+    # DELETE ASSESSMENT CONFIRMATION
+    # -----------------------------
+    if st.session_state.pending_delete_id is not None:
+
+        assessment_to_delete = next(
+            (
+                item
+                for item in st.session_state.saved_assessments
+                if item["Assessment ID"]
+                == st.session_state.pending_delete_id
+            ),
+            None
+        )
+
+        if assessment_to_delete:
+
             st.markdown("---")
-            st.markdown("### ⚠️ Assessment Management")
+            st.warning(
+                f"Are you sure you want to delete "
+                f"'{assessment_to_delete['Passage Title']}'?"
+            )
 
-            if st.button(
-                "🗑️ Delete This Assessment",
-                key=f"delete_entire_assessment_{assessment_id}",
-                use_container_width=True
-            ):
+            st.write(
+                "This action will remove the selected assessment "
+                "from the Saved Assessments list."
+            )
 
-                st.session_state.pending_delete_id = assessment_id
-                st.rerun()
+            confirm_col, cancel_col = st.columns(2)
 
+            with confirm_col:
+                if st.button(
+                    "Yes, Delete Assessment",
+                    key="confirm_delete_assessment",
+                    type="primary",
+                    use_container_width=True
+                ):
+
+                    delete_id = st.session_state.pending_delete_id
+
+                    # Remove selected assessment
+                    st.session_state.saved_assessments = [
+                        item
+                        for item in st.session_state.saved_assessments
+                        if item["Assessment ID"] != delete_id
+                    ]
+
+                    # Clear selected details
+                    if st.session_state.selected_assessment_id == delete_id:
+                        st.session_state.selected_assessment_id = None
+
+                    # Clear edit state if available
+                    if (
+                        "edit_assessment_id" in st.session_state
+                        and st.session_state.edit_assessment_id == delete_id
+                    ):
+                        st.session_state.edit_assessment_id = None
+
+                    # Clear pending deletion
+                    st.session_state.pending_delete_id = None
+
+                    st.rerun()
+
+            with cancel_col:
+                if st.button(
+                    "Cancel",
+                    key="cancel_delete_assessment",
+                    use_container_width=True
+                ):
+                    st.session_state.pending_delete_id = None
+                    st.rerun()
+
+        else:
+            st.session_state.pending_delete_id = None
             # ==================================
             # CLOSE DETAILS
             # ==================================
