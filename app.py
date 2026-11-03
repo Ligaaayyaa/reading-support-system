@@ -340,7 +340,7 @@ page = st.session_state.current_page
 # TOP HEADER - MODERN DESIGN
 # -----------------------------
 
-st.markdown("""
+st.html("""
 <div class="top-header">
 
     <div class="header-left">
@@ -368,8 +368,7 @@ st.markdown("""
     </div>
 
 </div>
-""", unsafe_allow_html=True)
-
+""")
 
 # -----------------------------
 # OVERVIEW PAGE
