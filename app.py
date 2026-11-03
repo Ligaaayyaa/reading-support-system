@@ -1408,6 +1408,180 @@ elif page == "Student Dashboard":
                             "answers": vocabulary_answers
                         }
 
+        # INTERACTIVE CONTEXT CLUES
+        st.divider()
+        st.subheader("📘 Interactive Activity: Context Clues")
+
+        st.write(
+            "Practice identifying unfamiliar words using clues from the sentence."
+        )
+
+        context_questions = [
+            {
+                "question": "The desert was arid, with very little rainfall throughout the year. What does arid mean?",
+                "options": [
+                    "Very dry",
+                    "Very cold",
+                    "Very crowded",
+                    "Very green"
+                ],
+                "answer": "Very dry",
+                "explanation": "Arid means extremely dry, usually because there is little or no rainfall."
+            },
+            {
+                "question": "Unlike her outgoing sister, Mia was reserved and rarely spoke during group discussions. What does reserved mean?",
+                "options": [
+                    "Very talkative",
+                    "Quiet and shy",
+                    "Angry and impatient",
+                    "Confident and loud"
+                ],
+                "answer": "Quiet and shy",
+                "explanation": "Reserved describes someone who is quiet and does not easily express their thoughts."
+            },
+            {
+                "question": "The instructions were vague, so the students were unsure what to do. What does vague mean?",
+                "options": [
+                    "Clear and detailed",
+                    "Short and simple",
+                    "Unclear or not specific",
+                    "Interesting and exciting"
+                ],
+                "answer": "Unclear or not specific",
+                "explanation": "Vague means unclear or lacking enough details."
+            }
+        ]
+
+        with st.expander("Open Context Clues Exercise"):
+
+            st.markdown("### Instructions")
+
+            st.write(
+                "Read each sentence carefully. Look for clues in the sentence "
+                "that will help you understand the unfamiliar word."
+            )
+
+            with st.form(f"context_clues_form_{student_id}"):
+
+                context_answers = []
+
+                for index, question in enumerate(context_questions):
+
+                    st.markdown(
+                        f"**Question {index + 1}. {question['question']}**"
+                    )
+
+                    answer = st.radio(
+                        "Choose your answer:",
+                        question["options"],
+                        index=None,
+                        key=f"context_answer_{student_id}_{index}"
+                    )
+
+                    context_answers.append(answer)
+
+                    st.divider()
+
+                submit_context = st.form_submit_button(
+                    "Submit Practice",
+                    use_container_width=True
+                )
+
+                if submit_context:
+
+                    if any(answer is None for answer in context_answers):
+
+                        st.error("Please answer all questions before submitting.")
+
+                    else:
+
+                        context_score = sum(
+                            1 for index, answer in enumerate(context_answers)
+                            if answer == context_questions[index]["answer"]
+                        )
+
+                        context_total = len(context_questions)
+
+                        context_percentage = round(
+                            (context_score / context_total) * 100, 2
+                        )
+
+                        practice_record = {
+                            "Student ID": student_id,
+                            "Student Name": selected_student["Full Name"],
+                            "Activity": "Context Clues",
+                            "Score": context_score,
+                            "Total Questions": context_total,
+                            "Percentage": context_percentage,
+                            "Submitted At": datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        }
+
+                        st.session_state.practice_results.append(
+                            practice_record
+                        )
+
+                        st.session_state[
+                            f"context_result_{student_id}"
+                        ] = {
+                            "score": context_score,
+                            "answers": context_answers
+                        }
+
+            # DISPLAY CONTEXT CLUES RESULT
+            latest_context = st.session_state.get(
+                f"context_result_{student_id}"
+            )
+
+            if latest_context:
+
+                st.divider()
+                st.markdown("### 📊 Context Clues Result")
+
+                score = latest_context["score"]
+                total = len(context_questions)
+                percentage = (score / total) * 100
+
+                col1, col2 = st.columns(2)
+
+                col1.metric("Practice Score", f"{score}/{total}")
+                col2.metric("Percentage", f"{percentage:.2f}%")
+
+                if score == total:
+
+                    st.success("Excellent! All answers are correct.")
+
+                elif score >= 2:
+
+                    st.info("Good job! Continue practicing context clues.")
+
+                else:
+
+                    st.warning("Keep practicing and review the explanations.")
+
+                st.markdown("### Answer Review")
+
+                for index, question in enumerate(context_questions):
+
+                    student_answer = latest_context["answers"][index]
+                    correct_answer = question["answer"]
+
+                    st.markdown(f"**Question {index + 1}**")
+
+                    if student_answer == correct_answer:
+
+                        st.success(f"Correct: {correct_answer}")
+
+                    else:
+
+                        st.error(f"Your answer: {student_answer}")
+                        st.info(f"Correct answer: {correct_answer}")
+
+                    st.caption(question["explanation"])
+
+        
+
             
         # PRACTICE HISTORY AND PROGRESS TRACKING
         st.divider()
