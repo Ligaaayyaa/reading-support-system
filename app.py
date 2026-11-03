@@ -1815,142 +1815,119 @@ can create positive and lasting effects on the community and the environment.
                         st.success("Question deleted successfully!")
                         st.rerun()
 
-                # ==================================
-            # SAVE ASSESSMENT CHANGES
+            # ==================================
+            # ASSESSMENT ACTION PANEL
             # ==================================
             st.markdown("---")
 
-            st.markdown("### 💾 Save Assessment Changes")
+            with st.container(border=True):
 
-            st.caption(
-                "Save the latest updates made to the passage information, "
-                "reading material, and comprehension questions."
-            )
+                st.markdown("### ⚙️ Assessment Actions")
 
-            if st.button(
-                "💾 Save Assessment Changes",
-                key=f"save_assessment_changes_{assessment_id}",
-                use_container_width=True
-            ):
+                st.caption(
+                    "Manage the changes made to this assessment."
+                )
 
-                for assessment in st.session_state.saved_assessments:
+                action_col1, action_col2, action_col3 = st.columns(
+                    [2, 1.5, 1]
+                )
 
-                    if assessment["Assessment ID"] == assessment_id:
+                # SAVE CHANGES - PRIMARY ACTION
+                with action_col1:
 
-                        assessment["Total Questions"] = len(
-                            assessment["Questions"]
-                        )
+                    if st.button(
+                        "💾 Save Changes",
+                        key=f"save_assessment_changes_{assessment_id}",
+                        type="primary",
+                        use_container_width=True
+                    ):
 
-                        assessment["Status"] = "Saved"
+                        for assessment in st.session_state.saved_assessments:
 
-                        break
+                            if assessment["Assessment ID"] == assessment_id:
 
-                st.success("Assessment changes saved successfully!")
-                st.rerun()
+                                assessment["Total Questions"] = len(
+                                    assessment["Questions"]
+                                )
 
-            # ==================================
-            # DELETE ENTIRE ASSESSMENT
-            # ==================================
-            st.markdown("---")
+                                assessment["Status"] = "Saved"
+                                break
 
-            st.markdown("### 🗑️ Delete Assessment")
+                        st.success("Assessment changes saved successfully!")
+                        st.rerun()
 
-            st.warning(
-                "Deleting this assessment will remove its passage, "
-                "reading material, and all associated questions."
-            )
+                # DELETE ASSESSMENT - SECONDARY ACTION
+                with action_col2:
 
-            if st.button(
-                "🗑️ Delete This Assessment",
-                key=f"delete_assessment_{assessment_id}",
-                use_container_width=True
-            ):
+                    if st.button(
+                        "🗑️ Delete Assessment",
+                        key=f"delete_assessment_{assessment_id}",
+                        type="secondary",
+                        use_container_width=True
+                    ):
 
-                st.session_state.pending_delete_id = assessment_id
-                st.rerun()
+                        st.session_state.pending_delete_id = assessment_id
+                        st.rerun()
 
-            # ==================================
-            # CLOSE DETAILS
-            # ==================================
-            if st.button(
-                "Close Details",
-                key=f"close_details_{assessment_id}",
-                use_container_width=True
-            ):
+                # CLOSE DETAILS
+                with action_col3:
 
-                st.session_state.selected_assessment_id = None
-                st.rerun()
+                    if st.button(
+                        "Close Details",
+                        key=f"close_details_{assessment_id}",
+                        type="secondary",
+                        use_container_width=True
+                    ):
 
-      # -----------------------------
-    # DELETE ASSESSMENT CONFIRMATION
-    # -----------------------------
-    if st.session_state.pending_delete_id is not None:
-
-        assessment_to_delete = next(
-            (
-                item
-                for item in st.session_state.saved_assessments
-                if item["Assessment ID"]
-                == st.session_state.pending_delete_id
-            ),
-            None
-        )
-
-        if assessment_to_delete:
-
-            st.markdown("---")
-            st.markdown("### ⚠️ Confirm Assessment Deletion")
-
-            st.warning(
-                f"Are you sure you want to delete "
-                f"'{assessment_to_delete['Passage Title']}'?"
-            )
-
-            st.write(
-                "This action will permanently remove this assessment "
-                "and all its associated questions from the current session."
-            )
-
-            confirm_col, cancel_col = st.columns(2)
-
-            with confirm_col:
-
-                if st.button(
-                    "Yes, Delete Assessment",
-                    key="confirm_delete_assessment",
-                    type="primary",
-                    use_container_width=True
-                ):
-
-                    delete_id = st.session_state.pending_delete_id
-
-                    st.session_state.saved_assessments = [
-                        item
-                        for item in st.session_state.saved_assessments
-                        if item["Assessment ID"] != delete_id
-                    ]
-
-                    if st.session_state.selected_assessment_id == delete_id:
                         st.session_state.selected_assessment_id = None
+                        st.session_state.pending_delete_id = None
+                        st.rerun()
 
-                    st.session_state.pending_delete_id = None
+                # DELETE CONFIRMATION
+                if st.session_state.pending_delete_id == assessment_id:
 
-                    st.success("Assessment deleted successfully!")
-                    st.rerun()
+                    st.divider()
 
-            with cancel_col:
+                    st.warning(
+                        f"Are you sure you want to delete "
+                        f"'{selected_assessment['Passage Title']}'? "
+                        "This will also remove its reading material "
+                        "and all associated questions."
+                    )
 
-                if st.button(
-                    "Cancel",
-                    key="cancel_delete_assessment",
-                    use_container_width=True
-                ):
+                    confirm_col, cancel_col = st.columns(2)
 
-                    st.session_state.pending_delete_id = None
-                    st.rerun()
+                    with confirm_col:
 
-        else:
-            st.session_state.pending_delete_id = None
+                        if st.button(
+                            "Yes, Delete Assessment",
+                            key=f"confirm_delete_{assessment_id}",
+                            type="primary",
+                            use_container_width=True
+                        ):
+
+                            st.session_state.saved_assessments = [
+                                item
+                                for item in st.session_state.saved_assessments
+                                if item["Assessment ID"] != assessment_id
+                            ]
+
+                            st.session_state.selected_assessment_id = None
+                            st.session_state.pending_delete_id = None
+
+                            st.success("Assessment deleted successfully!")
+                            st.rerun()
+
+                    with cancel_col:
+
+                        if st.button(
+                            "Cancel",
+                            key=f"cancel_delete_{assessment_id}",
+                            use_container_width=True
+                        ):
+
+                            st.session_state.pending_delete_id = None
+                            st.rerun()
             # ==================================
             # CLOSE DETAILS
             # ==================================
@@ -1962,7 +1939,6 @@ can create positive and lasting effects on the community and the environment.
 
                 st.session_state.selected_assessment_id = None
                 st.rerun()
-        
     # -----------------------------
     # DYNAMIC ASSESSMENT SUMMARY
     # -----------------------------
