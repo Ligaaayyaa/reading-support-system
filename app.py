@@ -1770,6 +1770,202 @@ elif page == "Student Dashboard":
 
                     st.caption(question["explanation"])
 
+        
+        # INTERACTIVE CRITICAL READING
+        st.divider()
+        st.subheader("🧠 Interactive Activity: Critical Reading")
+
+        st.write(
+            "Evaluate ideas, examine evidence, and identify the author's purpose."
+        )
+
+        critical_passage = """
+        ### Should Schools Reduce Plastic Waste?
+
+        Many schools use disposable plastic bottles and food containers
+        every day. These items are convenient, but they contribute to
+        environmental pollution when they are not properly disposed of.
+
+        Some schools have introduced refill stations and encouraged
+        students to bring reusable containers. Supporters believe these
+        actions can reduce plastic waste and help students develop
+        responsible habits.
+
+        However, introducing these programs requires planning and
+        resources. Schools need to maintain refill stations and provide
+        access to clean drinking water. A successful program therefore
+        requires cooperation among school administrators, teachers,
+        students, and parents.
+        """
+
+        with st.expander("Open Critical Reading Exercise"):
+
+            st.markdown("### Reading Passage")
+            st.markdown(critical_passage)
+
+            st.markdown("### Instructions")
+
+            st.write(
+                "Read the passage carefully. Analyze the author's purpose, "
+                "supporting evidence, and the ideas presented."
+            )
+
+            critical_questions = [
+                {
+                    "question": "What is the main purpose of the passage?",
+                    "options": [
+                        "To explain how schools can reduce plastic waste.",
+                        "To promote the sale of plastic bottles.",
+                        "To criticize students who bring food to school.",
+                        "To explain how plastic bottles are manufactured."
+                    ],
+                    "answer": "To explain how schools can reduce plastic waste.",
+                    "explanation": "The passage discusses the problem of plastic waste and possible school actions to address it."
+                },
+                {
+                    "question": "Which statement provides evidence that schools can reduce plastic waste?",
+                    "options": [
+                        "Schools have introduced refill stations and encouraged reusable containers.",
+                        "Plastic bottles are convenient to use.",
+                        "Students attend classes every day.",
+                        "Parents buy different kinds of containers."
+                    ],
+                    "answer": "Schools have introduced refill stations and encouraged reusable containers.",
+                    "explanation": "This statement describes specific actions that schools can take to reduce disposable plastic use."
+                },
+                {
+                    "question": "What can be concluded about implementing a plastic reduction program?",
+                    "options": [
+                        "It requires cooperation and proper planning.",
+                        "It can succeed without any resources.",
+                        "Only students are responsible for the program.",
+                        "Schools should stop providing drinking water."
+                    ],
+                    "answer": "It requires cooperation and proper planning.",
+                    "explanation": "The final paragraph explains that maintenance, resources, and cooperation are needed for a successful program."
+                }
+            ]
+
+            with st.form(f"critical_reading_form_{student_id}"):
+
+                critical_answers = []
+
+                for index, question in enumerate(critical_questions):
+
+                    st.markdown(
+                        f"**Question {index + 1}. {question['question']}**"
+                    )
+
+                    answer = st.radio(
+                        "Choose your answer:",
+                        question["options"],
+                        index=None,
+                        key=f"critical_answer_{student_id}_{index}"
+                    )
+
+                    critical_answers.append(answer)
+
+                    st.divider()
+
+                submit_critical = st.form_submit_button(
+                    "Submit Practice",
+                    use_container_width=True
+                )
+
+                if submit_critical:
+
+                    if any(answer is None for answer in critical_answers):
+
+                        st.error("Please answer all questions before submitting.")
+
+                    else:
+
+                        critical_score = sum(
+                            1 for index, answer in enumerate(critical_answers)
+                            if answer == critical_questions[index]["answer"]
+                        )
+
+                        critical_total = len(critical_questions)
+
+                        critical_percentage = round(
+                            (critical_score / critical_total) * 100, 2
+                        )
+
+                        practice_record = {
+                            "Student ID": student_id,
+                            "Student Name": selected_student["Full Name"],
+                            "Activity": "Critical Reading",
+                            "Score": critical_score,
+                            "Total Questions": critical_total,
+                            "Percentage": critical_percentage,
+                            "Submitted At": datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        }
+
+                        st.session_state.practice_results.append(
+                            practice_record
+                        )
+
+                        st.session_state[
+                            f"critical_result_{student_id}"
+                        ] = {
+                            "score": critical_score,
+                            "answers": critical_answers
+                        }
+
+            # DISPLAY CRITICAL READING RESULT
+            latest_critical = st.session_state.get(
+                f"critical_result_{student_id}"
+            )
+
+            if latest_critical:
+
+                st.divider()
+                st.markdown("### 📊 Critical Reading Result")
+
+                score = latest_critical["score"]
+                total = len(critical_questions)
+                percentage = (score / total) * 100
+
+                col1, col2 = st.columns(2)
+
+                col1.metric("Practice Score", f"{score}/{total}")
+                col2.metric("Percentage", f"{percentage:.2f}%")
+
+                if score == total:
+
+                    st.success("Excellent! You demonstrated strong critical reading skills.")
+
+                elif score >= 2:
+
+                    st.info("Good work! Continue evaluating ideas and evidence.")
+
+                else:
+
+                    st.warning("Keep practicing your critical reading skills.")
+
+                st.markdown("### Answer Review")
+
+                for index, question in enumerate(critical_questions):
+
+                    student_answer = latest_critical["answers"][index]
+                    correct_answer = question["answer"]
+
+                    st.markdown(f"**Question {index + 1}**")
+
+                    if student_answer == correct_answer:
+
+                        st.success(f"Correct: {correct_answer}")
+
+                    else:
+
+                        st.error(f"Your answer: {student_answer}")
+                        st.info(f"Correct answer: {correct_answer}")
+
+                    st.caption(question["explanation"])
+
+
 
         
 
