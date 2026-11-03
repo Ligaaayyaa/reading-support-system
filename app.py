@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 st.set_page_config(
     page_title="Reading Support System",
@@ -986,113 +987,229 @@ elif page == "User Management":
         st.info("No teacher records available yet.")
 
 
+
 # -----------------------------
 # STUDENT DASHBOARD
 # -----------------------------
 elif page == "Student Dashboard":
 
-    st.title("Student Dashboard")
-    st.caption("Your personal reading performance space.")
+    st.title("👨‍🎓 Student Dashboard")
+    st.caption("Take reading assessments and view your reading performance.")
 
-    # Get published assessments only
-    published_assessments = [
-        assessment
-        for assessment in st.session_state.saved_assessments
-        if assessment.get("Status") == "Published"
-    ]
+    students = st.session_state.student_records
+    assessments = st.session_state.saved_assessments
+    results = st.session_state.assessment_results
 
-    # Student overview
-    c1, c2 = st.columns(2)
+    if not students:
 
-    with c1:
-        st.metric("Available Assessments", len(published_assessments))
-
-    with c2:
-        st.metric("Latest Reading Score", "Not assessed")
-
-    st.divider()
-
-    # Available assessments
-    st.subheader("📝 Available Reading Assessments")
-
-    if published_assessments:
-
-        st.caption(
-            "Select an available assessment to view its reading passage "
-            "and comprehension questions."
-        )
-
-        for assessment in published_assessments:
-
-            with st.expander(
-                f"📖 {assessment['Passage Title']}",
-                expanded=False
-            ):
-
-                st.markdown(
-                    f"**Topic:** {assessment['Topic']}"
-                )
-
-                st.markdown(
-                    f"**Reading Level:** {assessment['Reading Level']}"
-                )
-
-                st.markdown(
-                    f"**Total Questions:** {len(assessment['Questions'])}"
-                )
-
-                st.divider()
-
-                st.markdown("### Reading Passage")
-
-                st.write(assessment["Reading Material"])
-
-                st.divider()
-
-                st.markdown("### Comprehension Questions")
-
-                for index, question in enumerate(
-                    assessment["Questions"]
-                ):
-
-                    st.markdown(
-                        f"**{index + 1}. {question['question']}**"
-                    )
-
-                    for option in question["options"]:
-                        st.write(option)
-
-                    st.caption(
-                        f"Skill: {question['skill']}"
-                    )
-
-                    st.write("")
+        st.info("No registered students available yet.")
 
     else:
 
-        st.info(
-            "There are currently no published assessments available. "
-            "Please check again later."
+        # SELECT STUDENT
+        student_options = {
+            f"{student['Full Name']} ({student['Grade Level']} - {student['Section']})": student
+            for student in students
+        }
+
+        selected_student_label = st.selectbox(
+            "Select Student",
+            list(student_options.keys())
         )
 
-    # Learning areas
-    st.divider()
+        selected_student = student_options[selected_student_label]
+        student_id = selected_student["Student ID"]
 
-    st.subheader("Learning Areas")
+        st.subheader("Student Information")
 
-    x, y = st.columns(2)
+        col1, col2 = st.columns(2)
+        col1.metric("Grade Level", selected_student["Grade Level"])
+        col2.metric("Section", selected_student["Section"])
 
-    with x:
-        st.markdown("**📖 Reading Comprehension**")
-        st.write(
-            "Understand passages and identify key details."
-        )
+        st.divider()
 
-    with y:
-        st.markdown("**📝 Vocabulary Development**")
-        st.write(
-            "Develop vocabulary and context clue skills."
-        )
+        # PUBLISHED ASSESSMENTS
+        published_assessments = [
+            assessment for assessment in assessments
+            if assessment.get("Status") == "Published"
+        ]
+
+        st.subheader("📝 Available Reading Assessments")
+
+        if not published_assessments:
+
+            st.info("There are currently no published assessments.")
+
+        else:
+
+            assessment_options = {
+                f"{assessment['Passage Title']} - {assessment['Topic']}": assessment
+                for assessment in published_assessments
+            }
+
+            selected_assessment_label = st.selectbox(
+                "Choose an Assessment",
+                list(assessment_options.keys())
+            )
+
+            selected_assessment = assessment_options[selected_assessment_label]
+            questions = selected_assessment.get("Questions", [])
+
+            st.write(f"**Passage:** {selected_assessment['Passage Title']}")
+            st.write(f"**Topic:** {selected_assessment['Topic']}")
+            st.write(f"**Reading Level:** {selected_assessment['Reading Level']}")
+
+            with st.container(border=True):
+                st.markdown("### Reading Material")
+                st.write(selected_assessment["Reading Material"])
+
+            st.divider()
+            st.subheader("Comprehension Questions")
+
+            if not questions:
+
+                st.warning("This assessment has no questions.")
+
+            else:
+
+                with st.form(
+                    f"student_assessment_{student_id}_{selected_assessment['Assessment ID']}"
+                ):
+
+                    student_answers = []
+
+                    for index, question in enumerate(questions):
+
+                        st.markdown(
+                            f"**Question {index + 1}: {question['question']}**"
+                        )
+
+                        st.caption(f"Reading Skill: {question.get('skill', 'Not specified')}")
+
+                        answer = st.radio(
+                            "Select your answer:",
+                            question["options"],
+                            index=None,
+                            key=f"answer_{student_id}_{selected_assessment['Assessment ID']}_{index}",
+                            label_visibility="collapsed"
+                        )
+
+                        student_answers.append(answer)
+
+                        st.divider()
+
+                    submitted = st.form_submit_button(
+                        "Submit Assessment",
+                        use_container_width=True
+                    )
+
+                    if submitted:
+
+                        if any(answer is None for answer in student_answers):
+
+                            st.error("Please answer all questions before submitting.")
+
+                        else:
+
+                            score = sum(
+                                1 for index, answer in enumerate(student_answers)
+                                if answer == questions[index]["answer"]
+                            )
+
+                            total_questions = len(questions)
+                            percentage = (score / total_questions) * 100
+
+                            # INITIAL CLASSIFICATION THRESHOLDS
+                            if percentage >= 90:
+                                classification = "Advanced"
+                            elif percentage >= 75:
+                                classification = "Proficient"
+                            elif percentage >= 50:
+                                classification = "Developing"
+                            else:
+                                classification = "Beginning"
+
+                            # SAVE ASSESSMENT RESULT
+                            existing_result_ids = [
+                                result.get("Result ID", 0)
+                                for result in results
+                            ]
+
+                            new_result_id = max(existing_result_ids, default=0) + 1
+
+                            new_result = {
+                                "Result ID": new_result_id,
+                                "Student ID": student_id,
+                                "Student Name": selected_student["Full Name"],
+                                "Grade Level": selected_student["Grade Level"],
+                                "Section": selected_student["Section"],
+                                "Assessment ID": selected_assessment["Assessment ID"],
+                                "Assessment Title": selected_assessment["Passage Title"],
+                                "Score": score,
+                                "Total Questions": total_questions,
+                                "Percentage": round(percentage, 2),
+                                "Classification": classification,
+                                "Submitted At": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            }
+
+                            st.session_state.assessment_results.append(new_result)
+
+                            st.success("Assessment submitted successfully!")
+
+                            st.subheader("📊 Assessment Result")
+
+                            col1, col2, col3 = st.columns(3)
+
+                            col1.metric(
+                                "Score",
+                                f"{score}/{total_questions}"
+                            )
+
+                            col2.metric(
+                                "Percentage",
+                                f"{percentage:.2f}%"
+                            )
+
+                            col3.metric(
+                                "Classification",
+                                classification
+                            )
+
+                            st.info(
+                                f"Your reading performance classification is **{classification}**."
+                            )
+
+        # STUDENT ASSESSMENT HISTORY
+        st.divider()
+        st.subheader("📚 Assessment History")
+
+        student_results = [
+            result for result in results
+            if result.get("Student ID") == student_id
+        ]
+
+        if student_results:
+
+            history_df = pd.DataFrame(student_results)
+
+            st.dataframe(
+                history_df[
+                    [
+                        "Assessment Title",
+                        "Score",
+                        "Total Questions",
+                        "Percentage",
+                        "Classification",
+                        "Submitted At"
+                    ]
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+
+        else:
+
+            st.info("No assessment results available for this student yet.")
 
 
 # -----------------------------
