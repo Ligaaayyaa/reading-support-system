@@ -2022,7 +2022,7 @@ can create positive and lasting effects on the community and the environment.
                         st.success("Question deleted successfully!")
                         st.rerun()
 
-            # ==================================
+                    # ==================================
             # ASSESSMENT ACTION PANEL
             # ==================================
             st.markdown("---")
@@ -2034,100 +2034,40 @@ can create positive and lasting effects on the community and the environment.
                 st.caption(
                     "Manage the changes made to this assessment."
                 )
+
                 action_col1, action_col2, action_col3 = st.columns(
                     [2, 1.5, 1]
                 )
 
-                # ==================================
-# ASSESSMENT STATUS MANAGEMENT
-# ==================================
-st.markdown("#### 📌 Assessment Status")
+                # SAVE CHANGES
+                with action_col1:
 
-status_options = [
-    "Draft",
-    "Published",
-    "Archived"
-]
+                    if st.button(
+                        "💾 Save Changes",
+                        key=f"save_assessment_changes_{assessment_id}",
+                        type="primary",
+                        use_container_width=True
+                    ):
 
-current_status = selected_assessment.get("Status", "Draft")
+                        for assessment in st.session_state.saved_assessments:
 
-if current_status not in status_options:
-    current_status = "Draft"
+                            if assessment["Assessment ID"] == assessment_id:
 
-selected_status = st.selectbox(
-    "Select Assessment Status",
-    status_options,
-    index=status_options.index(current_status),
-    key=f"assessment_status_{assessment_id}"
-)
+                                assessment["Total Questions"] = len(
+                                    assessment["Questions"]
+                                )
 
-if st.button(
-    "Update Assessment Status",
-    key=f"update_status_{assessment_id}",
-    use_container_width=True
-):
+                                if not assessment.get("Status"):
+                                    assessment["Status"] = "Draft"
 
-    # Validate before publishing
-    if selected_status == "Published":
+                                break
 
-        if (
-            not selected_assessment.get("Passage Title", "").strip()
-            or not selected_assessment.get("Topic", "").strip()
-            or not selected_assessment.get("Reading Material", "").strip()
-            or not selected_assessment.get("Questions", [])
-        ):
+                        st.success(
+                            "Assessment changes saved successfully!"
+                        )
+                        st.rerun()
 
-            st.error(
-                "This assessment cannot be published. "
-                "Please complete the passage information, "
-                "reading material, and comprehension questions."
-            )
-
-        else:
-
-            selected_assessment["Status"] = "Published"
-
-            st.success(
-                "Assessment published successfully!"
-            )
-            st.rerun()
-
-    else:
-
-        selected_assessment["Status"] = selected_status
-
-        st.success(
-            f"Assessment status updated to {selected_status}."
-        )
-        st.rerun()
-    # SAVE CHANGES - PRIMARY ACTION
-with action_col1:
-
-    if st.button(
-        "💾 Save Changes",
-        key=f"save_assessment_changes_{assessment_id}",
-        type="primary",
-        use_container_width=True
-    ):
-
-        for assessment in st.session_state.saved_assessments:
-
-            if assessment["Assessment ID"] == assessment_id:
-
-                assessment["Total Questions"] = len(
-                    assessment["Questions"]
-                )
-
-                # Keep the current assessment status
-                if not assessment.get("Status"):
-                    assessment["Status"] = "Draft"
-
-                break
-
-        st.success("Assessment changes saved successfully!")
-        st.rerun()
-
-                # DELETE ASSESSMENT - SECONDARY ACTION
+                # DELETE ASSESSMENT
                 with action_col2:
 
                     if st.button(
@@ -2154,7 +2094,75 @@ with action_col1:
                         st.session_state.pending_delete_id = None
                         st.rerun()
 
+                # ==================================
+                # ASSESSMENT STATUS MANAGEMENT
+                # ==================================
+                st.divider()
+                st.markdown("#### 📌 Assessment Status")
+
+                status_options = [
+                    "Draft",
+                    "Published",
+                    "Archived"
+                ]
+
+                current_status = selected_assessment.get(
+                    "Status", "Draft"
+                )
+
+                if current_status not in status_options:
+                    current_status = "Draft"
+
+                selected_status = st.selectbox(
+                    "Select Assessment Status",
+                    status_options,
+                    index=status_options.index(current_status),
+                    key=f"assessment_status_{assessment_id}"
+                )
+
+                if st.button(
+                    "Update Assessment Status",
+                    key=f"update_status_{assessment_id}",
+                    use_container_width=True
+                ):
+
+                    # Validate before publishing
+                    if selected_status == "Published":
+
+                        if (
+                            not selected_assessment.get("Passage Title", "").strip()
+                            or not selected_assessment.get("Topic", "").strip()
+                            or not selected_assessment.get("Reading Material", "").strip()
+                            or not selected_assessment.get("Questions", [])
+                        ):
+
+                            st.error(
+                                "This assessment cannot be published. "
+                                "Please complete the passage information, "
+                                "reading material, and comprehension questions."
+                            )
+
+                        else:
+
+                            selected_assessment["Status"] = "Published"
+
+                            st.success(
+                                "Assessment published successfully!"
+                            )
+                            st.rerun()
+
+                    else:
+
+                        selected_assessment["Status"] = selected_status
+
+                        st.success(
+                            f"Assessment status updated to {selected_status}."
+                        )
+                        st.rerun()
+
+                # ==================================
                 # DELETE CONFIRMATION
+                # ==================================
                 if st.session_state.pending_delete_id == assessment_id:
 
                     st.divider()
