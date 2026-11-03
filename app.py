@@ -1182,14 +1182,38 @@ elif page == "Student Dashboard":
                                 f"Your reading performance classification is **{classification}**."
                             )
                             
+
         # PERSONALIZED READING SUPPORT
         st.divider()
-        st.subheader("📖 Recommended Reading Support")
+        st.subheader("📖 Personalized Reading Support")
 
         student_results = [
             result for result in st.session_state.assessment_results
             if result.get("Student ID") == student_id
         ]
+
+        activity_recommendations = {
+            "Beginning": {
+                "activity": "Vocabulary Building",
+                "focus": "Build basic English vocabulary and understand common words.",
+                "reason": "Strengthening vocabulary can help improve understanding of simple English passages."
+            },
+            "Developing": {
+                "activity": "Context Clues",
+                "focus": "Understand unfamiliar words using surrounding sentences.",
+                "reason": "Using context clues can help develop vocabulary and reading comprehension."
+            },
+            "Proficient": {
+                "activity": "Inferential Reading",
+                "focus": "Make logical conclusions using information from reading passages.",
+                "reason": "Practicing inference can strengthen deeper comprehension and interpretation."
+            },
+            "Advanced": {
+                "activity": "Critical Reading",
+                "focus": "Analyze ideas, evaluate evidence, and understand the author's purpose.",
+                "reason": "Critical reading activities can further develop analytical reading skills."
+            }
+        }
 
         if student_results:
 
@@ -1201,109 +1225,44 @@ elif page == "Student Dashboard":
 
             classification = latest_result["Classification"]
 
-            reading_support = {
-                "Beginning": {
-                    "focus": "Build foundational reading skills.",
-                    "activities": [
-                        {
-                            "title": "Vocabulary Building",
-                            "description": "Practice identifying and understanding common English words."
-                        },
-                        {
-                            "title": "Sentence Reading",
-                            "description": "Read short and simple English sentences to improve reading accuracy."
-                        },
-                        {
-                            "title": "Short Passage Practice",
-                            "description": "Read short paragraphs and answer basic comprehension questions."
-                        }
-                    ]
-                },
+            recommendation = activity_recommendations.get(classification)
 
-                "Developing": {
-                    "focus": "Improve comprehension and reading consistency.",
-                    "activities": [
-                        {
-                            "title": "Context Clues",
-                            "description": "Use surrounding words and sentences to understand unfamiliar vocabulary."
-                        },
-                        {
-                            "title": "Guided Reading",
-                            "description": "Read short passages and identify their main ideas and supporting details."
-                        },
-                        {
-                            "title": "Comprehension Practice",
-                            "description": "Answer questions about important details and events in a passage."
-                        }
-                    ]
-                },
+            if recommendation:
 
-                "Proficient": {
-                    "focus": "Strengthen deeper understanding of English texts.",
-                    "activities": [
-                        {
-                            "title": "Inferential Reading",
-                            "description": "Identify implied meanings and make conclusions based on textual evidence."
-                        },
-                        {
-                            "title": "Main Idea and Evidence",
-                            "description": "Analyze how supporting details develop the central idea."
-                        },
-                        {
-                            "title": "Text Analysis",
-                            "description": "Examine the author's purpose, tone, and supporting arguments."
-                        }
-                    ]
-                },
-
-                "Advanced": {
-                    "focus": "Develop advanced analytical and critical reading skills.",
-                    "activities": [
-                        {
-                            "title": "Critical Reading",
-                            "description": "Evaluate arguments, evidence, and the credibility of information."
-                        },
-                        {
-                            "title": "Comparative Reading",
-                            "description": "Compare ideas and perspectives across different English texts."
-                        },
-                        {
-                            "title": "Advanced Text Analysis",
-                            "description": "Analyze complex passages, implied meanings, and rhetorical strategies."
-                        }
-                    ]
-                }
-            }
-
-            support = reading_support.get(classification)
-
-            if support:
-
-                st.info(
-                    f"Your current reading classification is **{classification}**. "
-                    f"{support['focus']}"
+                st.success(
+                    f"Your current Reading Classification: {classification}"
                 )
 
-                for index, activity in enumerate(support["activities"], start=1):
+                with st.container(border=True):
 
-                    with st.container(border=True):
+                    st.markdown("### ⭐ Recommended Activity")
 
-                        st.markdown(
-                            f"**{index}. {activity['title']}**"
-                        )
+                    st.markdown(
+                        f"**{recommendation['activity']}**"
+                    )
 
-                        st.write(activity["description"])
+                    st.write(
+                        f"**Learning Focus:** {recommendation['focus']}"
+                    )
+
+                    st.write(
+                        f"**Why this activity?** {recommendation['reason']}"
+                    )
+
+                    st.info(
+                        "You can find and open this activity in the "
+                        "Interactive Reading Activities section below."
+                    )
 
             else:
 
-                st.warning(
-                    "No reading support recommendations are available for your classification."
-                )
+                st.warning("No recommendation is available for this classification.")
 
         else:
 
             st.info(
-                "Complete a reading assessment first to receive personalized reading support."
+                "Complete a reading assessment first to receive "
+                "a personalized activity recommendation."
             )
 
         
