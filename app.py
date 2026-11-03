@@ -477,6 +477,7 @@ data = pd.DataFrame({
 # -----------------------------
 pages = {
     "Overview": "🏠  Overview",
+    "User Management": "👥  User Management",
     "Student Dashboard": "👨‍🎓  Student Dashboard",
     "Teacher Dashboard": "👩‍🏫  Teacher Dashboard",
     "Reading Assessment": "📝  Assessment Management",
@@ -811,6 +812,178 @@ if page == "Overview":
             </div>
             """, unsafe_allow_html=True)
 
+
+# -----------------------------
+# ADMIN - USER MANAGEMENT
+# -----------------------------
+elif page == "User Management":
+
+    st.title("👥 User Management")
+    st.caption("Manage student and teacher records.")
+
+    # USER SUMMARY
+    students = st.session_state.student_records
+    teachers = st.session_state.teacher_records
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("Registered Students", len(students))
+    col2.metric("Registered Teachers", len(teachers))
+
+    st.divider()
+
+    # ADD NEW USER
+    st.subheader("➕ Add New User")
+
+    with st.container(border=True):
+
+        with st.form("add_user_form"):
+
+            user_role = st.selectbox(
+                "User Role",
+                ["Student", "Teacher"]
+            )
+
+            full_name = st.text_input("Full Name")
+            email = st.text_input("Email Address")
+
+            if user_role == "Student":
+
+                grade_level = st.selectbox(
+                    "Grade Level",
+                    ["Grade 10", "Grade 11"]
+                )
+
+                section = st.text_input("Section")
+
+                teacher_options = [
+                    teacher["Full Name"]
+                    for teacher in teachers
+                ]
+
+                assigned_teacher = st.selectbox(
+                    "Assigned Teacher",
+                    ["Not Assigned"] + teacher_options
+                )
+
+            else:
+
+                subject = st.text_input(
+                    "Subject / Specialization"
+                )
+
+            save_user = st.form_submit_button(
+                "Save User",
+                use_container_width=True
+            )
+
+            if save_user:
+
+                if not full_name.strip() or not email.strip():
+
+                    st.error(
+                        "Please complete the Full Name and Email Address."
+                    )
+
+                else:
+
+                    existing_emails = [
+                        user["Email"].lower()
+                        for user in students + teachers
+                    ]
+
+                    if email.strip().lower() in existing_emails:
+
+                        st.error(
+                            "This email address is already registered."
+                        )
+
+                    elif user_role == "Student":
+
+                        if not section.strip():
+
+                            st.error("Please enter the student's section.")
+
+                        else:
+
+                            new_student = {
+                                "Student ID": len(students) + 1,
+                                "Full Name": full_name.strip(),
+                                "Email": email.strip(),
+                                "Grade Level": grade_level,
+                                "Section": section.strip(),
+                                "Assigned Teacher": (
+                                    None if assigned_teacher == "Not Assigned"
+                                    else assigned_teacher
+                                )
+                            }
+
+                            st.session_state.student_records.append(
+                                new_student
+                            )
+
+                            st.success(
+                                "Student record added successfully!"
+                            )
+                            st.rerun()
+
+                    else:
+
+                        if not subject.strip():
+
+                            st.error(
+                                "Please enter the teacher's subject or specialization."
+                            )
+
+                        else:
+
+                            new_teacher = {
+                                "Teacher ID": len(teachers) + 1,
+                                "Full Name": full_name.strip(),
+                                "Email": email.strip(),
+                                "Subject": subject.strip()
+                            }
+
+                            st.session_state.teacher_records.append(
+                                new_teacher
+                            )
+
+                            st.success(
+                                "Teacher record added successfully!"
+                            )
+                            st.rerun()
+
+    # REGISTERED STUDENTS
+    st.divider()
+    st.subheader("🎓 Registered Students")
+
+    if students:
+
+        st.dataframe(
+            pd.DataFrame(students),
+            use_container_width=True,
+            hide_index=True
+        )
+
+    else:
+
+        st.info("No student records available yet.")
+
+    # REGISTERED TEACHERS
+    st.divider()
+    st.subheader("👩‍🏫 Registered Teachers")
+
+    if teachers:
+
+        st.dataframe(
+            pd.DataFrame(teachers),
+            use_container_width=True,
+            hide_index=True
+        )
+
+    else:
+
+        st.info("No teacher records available yet.")
 
 
 # -----------------------------
