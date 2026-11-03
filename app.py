@@ -1282,11 +1282,16 @@ can create positive and lasting effects on the community and the environment.
                             "Please complete the question and all four choices."
                         )
 
-        # -----------------------------
-        # SAVE ASSESSMENT AS NEW RECORD
-        # -----------------------------
-        st.markdown("---")
-        st.markdown("### 💾 Save Assessment")
+         # -----------------------------
+    # SAVE ASSESSMENT AS NEW RECORD
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("### 💾 Save Assessment")
+
+    if (
+        st.session_state.passage_info_saved
+        and st.session_state.reading_material_saved
+    ):
 
         st.caption(
             "Save this passage and all its comprehension questions "
@@ -1294,7 +1299,7 @@ can create positive and lasting effects on the community and the environment.
         )
 
         if st.button(
-            "Save Assessment",
+            "💾 Save Assessment",
             key="save_assessment_button",
             use_container_width=True
         ):
@@ -1303,8 +1308,15 @@ can create positive and lasting effects on the community and the environment.
                 st.error("Please add at least one comprehension question.")
 
             else:
+                existing_ids = [
+                    item["Assessment ID"]
+                    for item in st.session_state.saved_assessments
+                ]
+
+                next_id = max(existing_ids, default=0) + 1
+
                 new_assessment = {
-                    "Assessment ID": len(st.session_state.saved_assessments) + 1,
+                    "Assessment ID": next_id,
                     "Passage Title": st.session_state.admin_passage_title,
                     "Topic": st.session_state.admin_passage_topic,
                     "Reading Level": st.session_state.admin_passage_level,
@@ -1317,10 +1329,9 @@ can create positive and lasting effects on the community and the environment.
                     "Status": "Saved"
                 }
 
-                # Create a new record without overwriting previous assessments
                 st.session_state.saved_assessments.append(new_assessment)
 
-                # Reset the current assessment form
+                # Reset the wizard for a new assessment
                 st.session_state.admin_passage_title = ""
                 st.session_state.admin_passage_topic = ""
                 st.session_state.admin_passage_level = "Secondary Education"
@@ -1330,7 +1341,6 @@ can create positive and lasting effects on the community and the environment.
                 st.session_state.passage_info_saved = False
                 st.session_state.reading_material_saved = False
 
-                # Clear Add New Question widget values
                 for key in [
                     "new_question_skill",
                     "new_question_text",
@@ -1343,10 +1353,18 @@ can create positive and lasting effects on the community and the environment.
                     if key in st.session_state:
                         del st.session_state[key]
 
+                st.session_state.selected_assessment_id = None
+
                 st.success("New assessment saved successfully!")
                 st.rerun()
 
-        # -----------------------------
+    else:
+        st.info(
+            "Complete and save Passage Information and Reading Material "
+            "before saving the assessment."
+        )
+
+    # -----------------------------
     # SAVED ASSESSMENTS TABLE
     # -----------------------------
     st.markdown("---")
@@ -1797,7 +1815,7 @@ can create positive and lasting effects on the community and the environment.
                         st.success("Question deleted successfully!")
                         st.rerun()
 
-             # -----------------------------
+    # -----------------------------
     # DELETE ASSESSMENT CONFIRMATION
     # -----------------------------
     if st.session_state.pending_delete_id is not None:
