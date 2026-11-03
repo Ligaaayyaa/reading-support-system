@@ -1387,8 +1387,8 @@ can create positive and lasting effects on the community and the environment.
                 st.session_state.selected_assessment_id = assessment["Assessment ID"]
                 st.rerun()
 
-        # -----------------------------
-        # DISPLAY SELECTED ASSESSMENT
+           # -----------------------------
+        # INTERACTIVE ASSESSMENT DETAILS
         # -----------------------------
         selected_assessment = next(
             (
@@ -1402,6 +1402,8 @@ can create positive and lasting effects on the community and the environment.
 
         if selected_assessment:
 
+            assessment_id = selected_assessment["Assessment ID"]
+
             st.markdown("---")
             st.markdown("## 📖 Assessment Details")
 
@@ -1409,53 +1411,270 @@ can create positive and lasting effects on the community and the environment.
                 f"### {selected_assessment['Passage Title']}"
             )
 
-            detail_col1, detail_col2, detail_col3 = st.columns(3)
+            detail_cols = st.columns(3)
 
-            detail_col1.metric(
+            detail_cols[0].metric(
                 "Assessment ID",
-                selected_assessment["Assessment ID"]
+                assessment_id
             )
 
-            detail_col2.metric(
+            detail_cols[1].metric(
                 "Reading Level",
                 selected_assessment["Reading Level"]
             )
 
-            detail_col3.metric(
+            detail_cols[2].metric(
                 "Total Questions",
-                selected_assessment["Total Questions"]
+                len(selected_assessment["Questions"])
             )
 
-            st.markdown("### Passage Information")
+            st.divider()
 
-            st.write(
-                f"**Passage Title:** {selected_assessment['Passage Title']}"
-            )
-            st.write(
-                f"**Topic:** {selected_assessment['Topic']}"
-            )
-            st.write(
-                f"**Reading Level:** {selected_assessment['Reading Level']}"
-            )
-            st.write(
-                f"**Status:** {selected_assessment['Status']}"
-            )
+            # ==================================
+            # EDIT PASSAGE INFORMATION
+            # ==================================
+            st.markdown("### 📚 Passage Information")
 
-            st.markdown("### Reading Material")
+            with st.expander(
+                "✏️ Edit Passage Information",
+                expanded=False
+            ):
 
-            st.write(selected_assessment["Reading Material"])
+                with st.form(
+                    f"edit_passage_details_{assessment_id}"
+                ):
 
-            st.markdown("### Comprehension Questions")
+                    edited_title = st.text_input(
+                        "Passage Title",
+                        value=selected_assessment["Passage Title"]
+                    )
+
+                    edited_topic = st.text_input(
+                        "Topic",
+                        value=selected_assessment["Topic"]
+                    )
+
+                    level_options = [
+                        "Elementary",
+                        "Junior High School",
+                        "Secondary Education",
+                        "Senior High School"
+                    ]
+
+                    current_level = selected_assessment["Reading Level"]
+
+                    edited_level = st.selectbox(
+                        "Reading Level",
+                        level_options,
+                        index=(
+                            level_options.index(current_level)
+                            if current_level in level_options else 2
+                        )
+                    )
+
+                    save_passage_changes = st.form_submit_button(
+                        "Save Passage Information",
+                        use_container_width=True
+                    )
+
+                    if save_passage_changes:
+
+                        if edited_title.strip() and edited_topic.strip():
+
+                            for assessment in st.session_state.saved_assessments:
+
+                                if assessment["Assessment ID"] == assessment_id:
+
+                                    assessment["Passage Title"] = edited_title.strip()
+                                    assessment["Topic"] = edited_topic.strip()
+                                    assessment["Reading Level"] = edited_level
+
+                                    break
+
+                            st.success(
+                                "Passage Information updated successfully!"
+                            )
+                            st.rerun()
+
+                        else:
+                            st.error(
+                                "Please complete the Passage Title and Topic."
+                            )
+
+            # ==================================
+            # EDIT READING MATERIAL
+            # ==================================
+            st.markdown("### 📖 Reading Material")
+
+            with st.expander(
+                "✏️ Edit Reading Material",
+                expanded=False
+            ):
+
+                with st.form(
+                    f"edit_reading_material_{assessment_id}"
+                ):
+
+                    edited_material = st.text_area(
+                        "Reading Passage Content",
+                        value=selected_assessment["Reading Material"],
+                        height=350
+                    )
+
+                    save_material = st.form_submit_button(
+                        "Save Reading Material",
+                        use_container_width=True
+                    )
+
+                    if save_material:
+
+                        if edited_material.strip():
+
+                            for assessment in st.session_state.saved_assessments:
+
+                                if assessment["Assessment ID"] == assessment_id:
+
+                                    assessment["Reading Material"] = (
+                                        edited_material.strip()
+                                    )
+
+                                    break
+
+                            st.success(
+                                "Reading Material updated successfully!"
+                            )
+                            st.rerun()
+
+                        else:
+                            st.error(
+                                "Reading Material cannot be empty."
+                            )
+
+            with st.expander("👁️ Preview Reading Material"):
+
+                st.write(selected_assessment["Reading Material"])
+
+            # ==================================
+            # ADD NEW QUESTION
+            # ==================================
+            st.markdown("---")
+            st.markdown("### ➕ Add New Question")
+
+            skill_options = [
+                "Main Idea",
+                "Vocabulary",
+                "Supporting Details",
+                "Inference",
+                "Cause and Effect",
+                "Critical Thinking",
+                "Conclusion"
+            ]
+
+            with st.container(border=True):
+
+                with st.form(
+                    f"add_question_details_{assessment_id}"
+                ):
+
+                    added_skill = st.selectbox(
+                        "Question Skill",
+                        skill_options,
+                        key=f"detail_skill_{assessment_id}"
+                    )
+
+                    added_question = st.text_input(
+                        "Question",
+                        key=f"detail_question_{assessment_id}"
+                    )
+
+                    added_options = []
+
+                    for i in range(4):
+
+                        added_options.append(
+                            st.text_input(
+                                f"Choice {chr(65 + i)}",
+                                key=f"detail_option_{assessment_id}_{i}"
+                            )
+                        )
+
+                    added_correct_answer = st.selectbox(
+                        "Correct Answer",
+                        options=[0, 1, 2, 3],
+                        format_func=lambda x: f"Choice {chr(65 + x)}",
+                        key=f"detail_answer_{assessment_id}"
+                    )
+
+                    add_question_details = st.form_submit_button(
+                        "➕ Add Question",
+                        use_container_width=True
+                    )
+
+                    if add_question_details:
+
+                        if (
+                            added_question.strip()
+                            and all(option.strip() for option in added_options)
+                        ):
+
+                            for assessment in st.session_state.saved_assessments:
+
+                                if assessment["Assessment ID"] == assessment_id:
+
+                                    assessment["Questions"].append({
+                                        "skill": added_skill,
+                                        "question": added_question.strip(),
+                                        "options": [
+                                            option.strip()
+                                            for option in added_options
+                                        ],
+                                        "answer": added_options[
+                                            added_correct_answer
+                                        ].strip()
+                                    })
+
+                                    assessment["Total Questions"] = len(
+                                        assessment["Questions"]
+                                    )
+
+                                    break
+
+                            st.success("New question added successfully!")
+
+                            for key in [
+                                f"detail_skill_{assessment_id}",
+                                f"detail_question_{assessment_id}",
+                                *[
+                                    f"detail_option_{assessment_id}_{i}"
+                                    for i in range(4)
+                                ],
+                                f"detail_answer_{assessment_id}"
+                            ]:
+                                if key in st.session_state:
+                                    del st.session_state[key]
+
+                            st.rerun()
+
+                        else:
+                            st.error(
+                                "Please complete the question and all four choices."
+                            )
+
+            # ==================================
+            # EXISTING QUESTIONS
+            # ==================================
+            st.markdown("---")
+            st.markdown("### 📝 Comprehension Questions")
 
             for index, question in enumerate(
-                selected_assessment["Questions"], start=1
+                selected_assessment["Questions"]
             ):
 
                 with st.expander(
-                    f"Question {index}: {question['skill']}"
+                    f"Question {index + 1} — {question['skill']}"
                 ):
 
-                    st.write(f"**Question:** {question['question']}")
+                    st.write(f"**{question['question']}**")
 
                     for option_index, option in enumerate(
                         question["options"]
@@ -1468,15 +1687,140 @@ can create positive and lasting effects on the community and the environment.
                         f"**Correct Answer:** {question['answer']}"
                     )
 
+                    # EDIT QUESTION
+                    with st.form(
+                        f"edit_detail_question_{assessment_id}_{index}"
+                    ):
+
+                        current_skill_index = (
+                            skill_options.index(question["skill"])
+                            if question["skill"] in skill_options else 0
+                        )
+
+                        updated_skill = st.selectbox(
+                            "Question Skill",
+                            skill_options,
+                            index=current_skill_index
+                        )
+
+                        updated_question = st.text_input(
+                            "Question",
+                            value=question["question"]
+                        )
+
+                        updated_options = []
+
+                        for option_index, option in enumerate(
+                            question["options"]
+                        ):
+
+                            updated_options.append(
+                                st.text_input(
+                                    f"Choice {chr(65 + option_index)}",
+                                    value=option
+                                )
+                            )
+
+                        current_answer_index = question["options"].index(
+                            question["answer"]
+                        )
+
+                        updated_answer = st.selectbox(
+                            "Correct Answer",
+                            options=[0, 1, 2, 3],
+                            index=current_answer_index,
+                            format_func=lambda x: f"Choice {chr(65 + x)}"
+                        )
+
+                        update_question = st.form_submit_button(
+                            "Save Question Changes",
+                            use_container_width=True
+                        )
+
+                        if update_question:
+
+                            if (
+                                updated_question.strip()
+                                and all(
+                                    option.strip()
+                                    for option in updated_options
+                                )
+                            ):
+
+                                for assessment in st.session_state.saved_assessments:
+
+                                    if assessment["Assessment ID"] == assessment_id:
+
+                                        assessment["Questions"][index] = {
+                                            "skill": updated_skill,
+                                            "question": updated_question.strip(),
+                                            "options": [
+                                                option.strip()
+                                                for option in updated_options
+                                            ],
+                                            "answer": updated_options[
+                                                updated_answer
+                                            ].strip()
+                                        }
+
+                                        break
+
+                                st.success("Question updated successfully!")
+                                st.rerun()
+
+                            else:
+                                st.error(
+                                    "Please complete the question and all choices."
+                                )
+
+                    # DELETE QUESTION
+                    if st.button(
+                        "🗑️ Delete Question",
+                        key=f"delete_detail_question_{assessment_id}_{index}",
+                        use_container_width=True
+                    ):
+
+                        for assessment in st.session_state.saved_assessments:
+
+                            if assessment["Assessment ID"] == assessment_id:
+
+                                assessment["Questions"].pop(index)
+
+                                assessment["Total Questions"] = len(
+                                    assessment["Questions"]
+                                )
+
+                                break
+
+                        st.success("Question deleted successfully!")
+                        st.rerun()
+
+            # ==================================
+            # DELETE ENTIRE ASSESSMENT
+            # ==================================
+            st.markdown("---")
+            st.markdown("### ⚠️ Assessment Management")
+
             if st.button(
-                "Close Details",
-                key="close_assessment_details"
+                "🗑️ Delete This Assessment",
+                key=f"delete_entire_assessment_{assessment_id}",
+                use_container_width=True
             ):
-                st.session_state.selected_assessment_id = None
+
+                st.session_state.pending_delete_id = assessment_id
                 st.rerun()
 
-    else:
-        st.info("No saved assessments yet.")
+            # ==================================
+            # CLOSE DETAILS
+            # ==================================
+            if st.button(
+                "Close Details",
+                key=f"close_details_{assessment_id}",
+                use_container_width=True
+            ):
+
+                st.session_state.selected_assessment_id = None
+                st.rerun()
         
     # -----------------------------
     # ADMIN SUMMARY
