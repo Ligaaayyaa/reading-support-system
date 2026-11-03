@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 
@@ -148,10 +149,7 @@ div.stButton > button:hover {
     color: white;
 }
 
-/* -----------------------------
-   MODERN MINIMALIST TOP HEADER
------------------------------ */
-
+/* MODERN MINIMALIST TOP HEADER */
 .top-header {
     width: 100%;
     background: #FFFFFF;
@@ -339,36 +337,22 @@ page = st.session_state.current_page
 # -----------------------------
 # TOP HEADER - MODERN DESIGN
 # -----------------------------
-
 st.html("""
 <div class="top-header">
 
     <div class="header-left">
-
-        <div class="system-logo">
-            📖
-        </div>
-
-        <h2 class="system-name">
-            Reading Support System
-        </h2>
-
+        <div class="system-logo">📖</div>
+        <h2 class="system-name">Reading Support System</h2>
     </div>
 
     <div class="header-profile">
-
-        <div class="profile-icon">
-            👤
-        </div>
-
-        <span class="profile-name">
-            Administrator
-        </span>
-
+        <div class="profile-icon">👤</div>
+        <span class="profile-name">Administrator</span>
     </div>
 
 </div>
 """)
+
 
 # -----------------------------
 # OVERVIEW PAGE
@@ -408,11 +392,7 @@ if page == "Overview":
     chart_col, dist_col = st.columns([2, 1])
 
     with chart_col:
-        st.markdown(
-            '<div class="panel">',
-            unsafe_allow_html=True
-        )
-
+        st.markdown('<div class="panel">', unsafe_allow_html=True)
         st.markdown("**Sample Reading Scores**")
         st.caption("Illustrative demonstration data only.")
 
@@ -421,17 +401,10 @@ if page == "Overview":
             color="#7956B5"
         )
 
-        st.markdown(
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with dist_col:
-        st.markdown(
-            '<div class="panel">',
-            unsafe_allow_html=True
-        )
-
+        st.markdown('<div class="panel">', unsafe_allow_html=True)
         st.markdown("**Performance Distribution**")
         st.caption("Illustrative demonstration data only.")
 
@@ -442,10 +415,7 @@ if page == "Overview":
             color="#A78BCE"
         )
 
-        st.markdown(
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("### Recent Assessment Activity")
     st.caption("Sample records only; not actual student information.")
@@ -489,16 +459,10 @@ elif page == "Student Dashboard":
     c1, c2 = st.columns(2)
 
     with c1:
-        st.metric(
-            "Latest Reading Score",
-            "Not assessed"
-        )
+        st.metric("Latest Reading Score", "Not assessed")
 
     with c2:
-        st.metric(
-            "Performance Classification",
-            "Pending"
-        )
+        st.metric("Performance Classification", "Pending")
 
     st.subheader("Your Reading Progress")
 
@@ -512,15 +476,11 @@ elif page == "Student Dashboard":
 
     with x:
         st.markdown("**📖 Reading Comprehension**")
-        st.write(
-            "Understand passages and identify key details."
-        )
+        st.write("Understand passages and identify key details.")
 
     with y:
         st.markdown("**📝 Vocabulary Development**")
-        st.write(
-            "Develop vocabulary and context clue skills."
-        )
+        st.write("Develop vocabulary and context clue skills.")
 
 
 # -----------------------------
@@ -562,46 +522,356 @@ elif page == "Teacher Dashboard":
 # -----------------------------
 elif page == "Reading Assessment":
 
-    st.title("English Reading Assessment")
-
-    st.write(
-        "Read the passage and answer the question."
+    st.title("📖 English Reading Assessment")
+    st.caption(
+        "Measure your reading comprehension through an educational passage."
     )
 
-    st.markdown("### The Importance of Reading")
+    st.markdown("""
+    <div class="hero">
+        <h2>Welcome to Your Reading Assessment!</h2>
+        <p>
+            Read the passage carefully and answer the comprehension questions.
+            This activity will help evaluate your understanding of written information.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ASSESSMENT INFORMATION
+    info1, info2, info3 = st.columns(3)
+
+    assessment_info = [
+        (info1, "📚 Assessment Type", "Reading Comprehension"),
+        (info2, "📝 Total Questions", "8 Questions"),
+        (info3, "⏱️ Estimated Time", "15 Minutes")
+    ]
+
+    for col, label, value in assessment_info:
+        with col:
+            st.markdown(f"""
+            <div class="stat-card">
+                <div class="stat-name">{label}</div>
+                <div class="stat-number" style="font-size:20px;">
+                    {value}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # READING PASSAGE
+    st.markdown("### 📖 Reading Passage")
+
+    st.markdown("""
+    <div class="panel">
+        <h2 style="color:#493078;">
+            Small Actions, A Greener Future
+        </h2>
+
+        <p style="color:#9A90A7; font-size:12px;">
+            Topic: Environmental Awareness | Reading Level: Secondary Education
+        </p>
+
+        <p style="line-height:1.9; text-align:justify;">
+            Environmental problems have become a major concern in many
+            communities. Issues such as plastic pollution, improper waste
+            disposal, and excessive energy consumption affect both people
+            and the natural environment. Although these problems may seem
+            difficult to solve, small actions performed by individuals can
+            contribute to meaningful improvements.
+        </p>
+
+        <p style="line-height:1.9; text-align:justify;">
+            One practical way to protect the environment is through proper
+            waste management. Separating biodegradable, recyclable, and
+            non-recyclable materials helps reduce the amount of waste sent
+            to landfills. Reusing containers, bringing reusable bags, and
+            avoiding unnecessary single-use plastics are also simple habits
+            that can reduce pollution.
+        </p>
+
+        <p style="line-height:1.9; text-align:justify;">
+            Technology can also support environmental protection. Mobile
+            applications and online platforms provide information about
+            recycling programs, environmental campaigns, and sustainable
+            practices. Schools can use digital tools to educate students
+            about environmental issues and encourage participation in
+            community activities. However, technology should be used
+            responsibly because electronic waste and excessive energy
+            consumption can create additional environmental challenges.
+        </p>
+
+        <p style="line-height:1.9; text-align:justify;">
+            Students play an important role in promoting environmental
+            awareness. They can participate in clean-up drives, organize
+            recycling projects, and encourage their families and classmates
+            to practice responsible waste disposal. These activities develop
+            not only environmental responsibility but also cooperation,
+            leadership, and problem-solving skills.
+        </p>
+
+        <p style="line-height:1.9; text-align:justify;">
+            Protecting the environment does not require one person to make
+            a dramatic change overnight. What matters is consistency and
+            collective effort. When individuals make responsible choices
+            and work together, small actions can create positive and lasting
+            effects on the community and the environment.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # INSTRUCTIONS
+    st.markdown("### 📌 Assessment Instructions")
 
     st.info("""
-    Reading is an important skill that helps students understand
-    information, develop ideas, and communicate effectively.
-    Regular reading practice can improve vocabulary and
-    comprehension skills.
+    1. Read the passage carefully before answering.
+    2. Answer all eight comprehension questions.
+    3. Select only one answer for each question.
+    4. Review your answers before submitting.
+    5. Click the Submit Assessment button to view your results.
     """)
 
-    answer = st.radio(
-        "What is one benefit of regular reading?",
-        [
-            "It improves vocabulary and comprehension.",
-            "It eliminates the need to study.",
-            "It prevents students from learning new ideas."
-        ],
-        index=None
+    st.markdown("---")
+    st.markdown("### 📝 Comprehension Questions")
+
+    # QUESTIONS
+    questions = [
+        {
+            "skill": "Main Idea",
+            "question": "1. What is the main idea of the passage?",
+            "options": [
+                "A. Technology is the only solution to environmental problems.",
+                "B. Small individual actions and collective efforts can help protect the environment.",
+                "C. Environmental protection is only the responsibility of government organizations.",
+                "D. Students should avoid using technology."
+            ],
+            "answer": "B. Small individual actions and collective efforts can help protect the environment."
+        },
+        {
+            "skill": "Vocabulary",
+            "question": "2. What does the word 'biodegradable' mean in the passage?",
+            "options": [
+                "A. Materials that can naturally decompose.",
+                "B. Materials that cannot be reused.",
+                "C. Materials that are harmful to all living things.",
+                "D. Materials that are made only from plastic."
+            ],
+            "answer": "A. Materials that can naturally decompose."
+        },
+        {
+            "skill": "Supporting Details",
+            "question": "3. Which of the following is mentioned as a way to reduce plastic pollution?",
+            "options": [
+                "A. Buying more disposable products.",
+                "B. Burning plastic waste.",
+                "C. Bringing reusable bags.",
+                "D. Throwing all waste into one container."
+            ],
+            "answer": "C. Bringing reusable bags."
+        },
+        {
+            "skill": "Supporting Details",
+            "question": "4. How can technology help promote environmental protection?",
+            "options": [
+                "A. By replacing all environmental programs.",
+                "B. By providing information about recycling and environmental campaigns.",
+                "C. By increasing the use of disposable materials.",
+                "D. By preventing students from joining community activities."
+            ],
+            "answer": "B. By providing information about recycling and environmental campaigns."
+        },
+        {
+            "skill": "Inference",
+            "question": "5. What can be inferred about the role of students in environmental protection?",
+            "options": [
+                "A. Students are too young to make a difference.",
+                "B. Students can influence others through responsible actions.",
+                "C. Students should leave environmental activities to adults.",
+                "D. Students can solve all environmental problems independently."
+            ],
+            "answer": "B. Students can influence others through responsible actions."
+        },
+        {
+            "skill": "Cause and Effect",
+            "question": "6. What may happen when people fail to manage waste properly?",
+            "options": [
+                "A. Pollution may increase.",
+                "B. Natural resources will automatically recover.",
+                "C. Communities will produce less waste.",
+                "D. Recycling programs will no longer be needed."
+            ],
+            "answer": "A. Pollution may increase."
+        },
+        {
+            "skill": "Critical Thinking",
+            "question": "7. Which action best demonstrates responsible environmental behavior?",
+            "options": [
+                "A. Using disposable plastic products every day.",
+                "B. Ignoring community clean-up activities.",
+                "C. Separating waste and participating in recycling programs.",
+                "D. Leaving waste in public places."
+            ],
+            "answer": "C. Separating waste and participating in recycling programs."
+        },
+        {
+            "skill": "Conclusion",
+            "question": "8. What message does the author emphasize in the final paragraph?",
+            "options": [
+                "A. Only large organizations can protect the environment.",
+                "B. Environmental protection requires expensive technology.",
+                "C. Consistent individual actions and cooperation can create lasting improvements.",
+                "D. Environmental problems cannot be solved."
+            ],
+            "answer": "C. Consistent individual actions and cooperation can create lasting improvements."
+        }
+    ]
+
+    # INITIALIZE SESSION STATE
+    if "assessment_submitted" not in st.session_state:
+        st.session_state.assessment_submitted = False
+
+    if "assessment_score" not in st.session_state:
+        st.session_state.assessment_score = None
+
+    # PROGRESS TRACKING
+    answered = sum(
+        1 for i in range(len(questions))
+        if st.session_state.get(f"question_{i}") is not None
     )
 
-    if st.button("Submit Answer"):
+    progress = answered / len(questions)
 
-        if answer is None:
-            st.warning("Please select an answer.")
-
-        elif answer == "It improves vocabulary and comprehension.":
-            st.success("Correct answer!")
-
-        else:
-            st.error(
-                "Incorrect. Please review the passage."
-            )
+    st.markdown(
+        f"**Assessment Progress: {answered}/{len(questions)} questions answered**"
+    )
+    st.progress(progress)
 
     st.caption(
-        "Demonstration question only. Not the final research instrument."
+        "Select one answer for every question before submitting your assessment."
+    )
+
+    # DISPLAY QUESTIONS
+    for i, item in enumerate(questions):
+
+        st.markdown(f"""
+        <div class="panel">
+            <span style="
+                color:#7956B5;
+                font-size:12px;
+                font-weight:700;
+                text-transform:uppercase;
+            ">
+                {item["skill"]}
+            </span>
+            <h4 style="color:#493078; margin-top:8px;">
+                {item["question"]}
+            </h4>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.radio(
+            item["question"],
+            item["options"],
+            key=f"question_{i}",
+            index=None,
+            label_visibility="collapsed",
+            disabled=st.session_state.assessment_submitted
+        )
+
+    st.markdown("---")
+
+    # SUBMIT ASSESSMENT
+    if not st.session_state.assessment_submitted:
+
+        if st.button(
+            "Submit Assessment",
+            type="primary",
+            use_container_width=True
+        ):
+
+            if answered < len(questions):
+                st.warning(
+                    f"Please answer all questions first. "
+                    f"You still have {len(questions) - answered} unanswered question(s)."
+                )
+
+            else:
+                score = 0
+
+                for i, item in enumerate(questions):
+                    selected = st.session_state.get(f"question_{i}")
+
+                    if selected == item["answer"]:
+                        score += 1
+
+                st.session_state.assessment_score = score
+                st.session_state.assessment_submitted = True
+
+                st.rerun()
+
+    # ASSESSMENT RESULTS
+    if st.session_state.assessment_submitted:
+
+        score = st.session_state.assessment_score
+        percentage = (score / len(questions)) * 100
+
+        st.markdown("## 📊 Assessment Results")
+
+        result1, result2, result3 = st.columns(3)
+
+        with result1:
+            st.metric("Total Score", f"{score}/{len(questions)}")
+
+        with result2:
+            st.metric("Percentage", f"{percentage:.1f}%")
+
+        with result3:
+            st.metric("Questions Answered", f"{len(questions)}/{len(questions)}")
+
+        if percentage >= 80:
+            st.success(
+                "Excellent! You demonstrated a strong understanding of the passage."
+            )
+        elif percentage >= 60:
+            st.info(
+                "Good effort! Continue practicing to improve your reading comprehension."
+            )
+        else:
+            st.warning(
+                "You may need additional reading practice. Review the passage and "
+                "focus on identifying important details and ideas."
+            )
+
+        st.markdown("### Answer Review")
+
+        for i, item in enumerate(questions):
+
+            selected = st.session_state.get(f"question_{i}")
+            correct = selected == item["answer"]
+
+            if correct:
+                st.success(f"Question {i + 1}: Correct")
+            else:
+                st.error(f"Question {i + 1}: Incorrect")
+                st.write(f"Your answer: {selected}")
+                st.write(f"Correct answer: {item['answer']}")
+
+        if st.button(
+            "Take Assessment Again",
+            use_container_width=True
+        ):
+
+            for i in range(len(questions)):
+                st.session_state.pop(f"question_{i}", None)
+
+            st.session_state.assessment_submitted = False
+            st.session_state.assessment_score = None
+
+            st.rerun()
+
+    st.caption(
+        "Academic prototype assessment. Questions and scoring are for demonstration "
+        "and require validation before use as a formal research instrument."
     )
 
 
