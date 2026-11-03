@@ -1822,73 +1822,103 @@ can create positive and lasting effects on the community and the environment.
                 st.session_state.selected_assessment_id = None
                 st.rerun()
         
-   # ==================================
-# DYNAMIC ASSESSMENT SUMMARY
-# ==================================
+ # -----------------------------
+    # ADMIN SUMMARY
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("### 📊 Assessment Summary")
 
-st.markdown("---")
-st.markdown("## 📊 Assessment Summary")
+    summary_col1, summary_col2, summary_col3 = st.columns(3)
 
-# Get the currently selected assessment
-selected_assessment = next(
-    (
-        assessment
-        for assessment in st.session_state.saved_assessments
-        if assessment["Assessment ID"]
-        == st.session_state.selected_assessment_id
-    ),
-    None
-)
-
-if selected_assessment:
-
-    # Check actual saved assessment data
-    passage_completed = (
-        bool(selected_assessment.get("Passage Title", "").strip())
-        and bool(selected_assessment.get("Topic", "").strip())
-        and bool(selected_assessment.get("Reading Level", "").strip())
-    )
-
-    material_completed = bool(
-        selected_assessment.get("Reading Material", "").strip()
-    )
-
-    questions_completed = (
-        len(selected_assessment.get("Questions", [])) > 0
-    )
-
-    # Display dynamic status
-    summary_cols = st.columns(3)
-
-    with summary_cols[0]:
+    with summary_col1:
         st.metric(
             "Passage Information",
-            "Completed" if passage_completed else "Pending"
+            "Completed" if st.session_state.passage_info_saved else "Pending"
         )
 
-    with summary_cols[1]:
+    with summary_col2:
         st.metric(
             "Reading Material",
-            "Completed" if material_completed else "Pending"
+            "Completed" if st.session_state.reading_material_saved else "Pending"
         )
 
-    with summary_cols[2]:
+    with summary_col3:
         st.metric(
             "Comprehension Questions",
-            "Completed" if questions_completed else "Pending"
+            len(st.session_state.admin_questions)
+            if st.session_state.reading_material_saved else "Locked"
         )
 
     st.caption(
-        f"Assessment ID: {selected_assessment['Assessment ID']} "
-        f"| {selected_assessment['Passage Title']}"
+        "Administrator content management prototype. Changes are stored "
+        "in the current Streamlit session only and are not yet saved permanently."
     )
 
-else:
+ # -----------------------------
+    # ADMIN SUMMARY
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("### 📊 Assessment Summary")
 
-    st.info(
-        "Select an assessment from the Saved Assessments list "
-        "to view its current summary."
+    summary_col1, summary_col2, summary_col3 = st.columns(3)
+
+    with summary_col1:
+        st.metric(
+            "Passage Information",
+            "Completed" if st.session_state.passage_info_saved else "Pending"
+        )
+
+    with summary_col2:
+        st.metric(
+            "Reading Material",
+            "Completed" if st.session_state.reading_material_saved else "Pending"
+        )
+
+    with summary_col3:
+        st.metric(
+            "Comprehension Questions",
+            len(st.session_state.admin_questions)
+            if st.session_state.reading_material_saved else "Locked"
+        )
+
+    st.caption(
+        "Administrator content management prototype. Changes are stored "
+        "in the current Streamlit session only and are not yet saved permanently."
     )
+
+    # -----------------------------
+    # ADMIN SUMMARY
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("### 📊 Assessment Summary")
+
+    summary_col1, summary_col2, summary_col3 = st.columns(3)
+
+    with summary_col1:
+        st.metric(
+            "Passage Information",
+            "Completed" if st.session_state.passage_info_saved else "Pending"
+        )
+
+    with summary_col2:
+        st.metric(
+            "Reading Material",
+            "Completed" if st.session_state.reading_material_saved else "Pending"
+        )
+
+    with summary_col3:
+        st.metric(
+            "Comprehension Questions",
+            len(st.session_state.admin_questions)
+            if st.session_state.reading_material_saved else "Locked"
+        )
+
+    st.caption(
+        "Administrator content management prototype. Changes are stored "
+        "in the current Streamlit session only and are not yet saved permanently."
+    )
+
+
 
 # -----------------------------
 # READING SUPPORT
