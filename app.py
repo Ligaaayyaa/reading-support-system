@@ -1408,6 +1408,99 @@ elif page == "Student Dashboard":
                             "answers": vocabulary_answers
                         }
 
+            
+        # PRACTICE HISTORY AND PROGRESS TRACKING
+        st.divider()
+        st.subheader("📈 My Practice Progress")
+
+        student_practice_results = [
+            result for result in st.session_state.practice_results
+            if result.get("Student ID") == student_id
+        ]
+
+        if student_practice_results:
+
+            # SORT FROM LATEST TO OLDEST
+            sorted_practice_results = sorted(
+                student_practice_results,
+                key=lambda result: result.get("Submitted At", ""),
+                reverse=True
+            )
+
+            total_attempts = len(sorted_practice_results)
+
+            average_practice_score = sum(
+                result["Percentage"]
+                for result in sorted_practice_results
+            ) / total_attempts
+
+            latest_practice_result = sorted_practice_results[0]
+
+            col1, col2, col3 = st.columns(3)
+
+            col1.metric(
+                "Total Practice Attempts",
+                total_attempts
+            )
+
+            col2.metric(
+                "Average Practice Score",
+                f"{average_practice_score:.2f}%"
+            )
+
+            col3.metric(
+                "Latest Practice Score",
+                f"{latest_practice_result['Percentage']:.2f}%"
+            )
+
+            st.markdown("### Practice Activity History")
+
+            practice_history_df = pd.DataFrame(
+                sorted_practice_results
+            )
+
+            st.dataframe(
+                practice_history_df[
+                    [
+                        "Activity",
+                        "Score",
+                        "Total Questions",
+                        "Percentage",
+                        "Submitted At"
+                    ]
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+
+            st.markdown("### Practice Performance Trend")
+
+            trend_df = pd.DataFrame(
+                sorted_practice_results
+            ).sort_values("Submitted At")
+
+            trend_df = trend_df.reset_index(drop=True)
+            trend_df["Attempt"] = [
+                f"Attempt {index + 1}"
+                for index in range(len(trend_df))
+            ]
+
+            st.line_chart(
+                trend_df.set_index("Attempt")[["Percentage"]]
+            )
+
+            st.caption(
+                "This chart shows the student's practice scores across attempts."
+            )
+
+        else:
+
+            st.info(
+                "No practice history available yet. "
+                "Complete a reading support activity to track your progress."
+            )
+
+
             # DISPLAY LATEST PRACTICE RESULT
             latest_practice = st.session_state.get(
                 f"vocabulary_result_{student_id}"
