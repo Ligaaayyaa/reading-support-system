@@ -1094,40 +1094,135 @@ elif page == "Student Dashboard":
             "Develop vocabulary and context clue skills."
         )
 
+
 # -----------------------------
 # TEACHER DASHBOARD
 # -----------------------------
 elif page == "Teacher Dashboard":
 
-    st.title("Teacher Dashboard")
-    st.caption("Reading performance monitoring.")
+    st.title("👩‍🏫 Teacher Dashboard")
+    st.caption("Monitor assigned students and their reading performance.")
 
-    st.warning(
-        "All records below are illustrative sample data."
-    )
+    # GET REGISTERED RECORDS
+    teachers = st.session_state.teacher_records
+    students = st.session_state.student_records
 
-    c1, c2, c3 = st.columns(3)
+    # CHECK IF TEACHERS ARE AVAILABLE
+    if not teachers:
 
-    c1.metric("Sample Students", "5")
-    c2.metric("Average Sample Score", "78.4")
-    c3.metric("ML Model", "Pending")
+        st.info("No registered teachers available. Please add teachers in User Management.")
 
-    st.subheader("Student Performance Chart")
+    else:
 
-    st.bar_chart(
-        data.set_index("Student")["Reading Score"],
-        color="#7956B5"
-    )
+        # SELECT TEACHER
+        teacher_names = [
+            teacher["Full Name"]
+            for teacher in teachers
+        ]
 
-    st.subheader("Student Records")
+        selected_teacher = st.selectbox(
+            "Select Teacher",
+            teacher_names
+        )
 
-    st.dataframe(
-        data,
-        use_container_width=True,
-        hide_index=True
-    )
+        # FILTER ASSIGNED STUDENTS
+        assigned_students = [
+            student for student in students
+            if student.get("Assigned Teacher") == selected_teacher
+        ]
 
+        # SUMMARY
+        total_students = len(assigned_students)
 
+        grade_10_count = sum(
+            1 for student in assigned_students
+            if student.get("Grade Level") == "Grade 10"
+        )
+
+        grade_11_count = sum(
+            1 for student in assigned_students
+            if student.get("Grade Level") == "Grade 11"
+        )
+
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric("Assigned Students", total_students)
+        col2.metric("Grade 10 Students", grade_10_count)
+        col3.metric("Grade 11 Students", grade_11_count)
+
+        st.divider()
+
+        # TEACHER INFORMATION
+        teacher_info = next(
+            teacher for teacher in teachers
+            if teacher["Full Name"] == selected_teacher
+        )
+
+        st.subheader("Teacher Information")
+
+        with st.container(border=True):
+
+            st.write(f"**Name:** {teacher_info['Full Name']}")
+            st.write(f"**Email:** {teacher_info['Email']}")
+            st.write(f"**Subject / Specialization:** {teacher_info['Subject']}")
+
+        st.divider()
+
+        # ASSIGNED STUDENTS
+        st.subheader("🎓 Assigned Students")
+
+        if assigned_students:
+
+            student_df = pd.DataFrame(assigned_students)
+
+            st.dataframe(
+                student_df[
+                    [
+                        "Student ID",
+                        "Full Name",
+                        "Email",
+                        "Grade Level",
+                        "Section"
+                    ]
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+
+        else:
+
+            st.info("No students are currently assigned to this teacher.")
+
+        st.divider()
+
+        # UNASSIGNED STUDENTS
+        unassigned_students = [
+            student for student in students
+            if not student.get("Assigned Teacher")
+        ]
+
+        st.subheader("📋 Students Without Assigned Teachers")
+
+        if unassigned_students:
+
+            unassigned_df = pd.DataFrame(unassigned_students)
+
+            st.dataframe(
+                unassigned_df[
+                    [
+                        "Student ID",
+                        "Full Name",
+                        "Grade Level",
+                        "Section"
+                    ]
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+
+        else:
+
+            st.success("All registered students have an assigned teacher.")
 
 
 # -----------------------------
