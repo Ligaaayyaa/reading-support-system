@@ -1212,6 +1212,65 @@ elif page == "Student Dashboard":
             st.info("No assessment results available for this student yet.")
 
 
+        # MY READING RESULTS
+        st.divider()
+        st.subheader("📊 My Reading Results")
+
+        student_results = [
+            result for result in st.session_state.assessment_results
+            if result.get("Student ID") == student_id
+        ]
+
+        if student_results:
+
+            # Sort results from latest to oldest
+            student_results = sorted(
+                student_results,
+                key=lambda result: result.get("Submitted At", ""),
+                reverse=True
+            )
+
+            latest_result = student_results[0]
+
+            col1, col2, col3 = st.columns(3)
+
+            col1.metric(
+                "Latest Score",
+                f"{latest_result['Score']}/{latest_result['Total Questions']}"
+            )
+
+            col2.metric(
+                "Latest Percentage",
+                f"{latest_result['Percentage']:.2f}%"
+            )
+
+            col3.metric(
+                "Latest Classification",
+                latest_result["Classification"]
+            )
+
+            st.write(
+                f"**Latest Assessment:** {latest_result['Assessment Title']}"
+            )
+
+            st.write(
+                f"**Date Submitted:** {latest_result['Submitted At']}"
+            )
+
+            st.info(
+                f"Your latest reading performance classification is "
+                f"**{latest_result['Classification']}**."
+            )
+
+        else:
+
+            st.info(
+                "You do not have any reading assessment results yet. "
+                "Complete a published assessment to view your results."
+            )
+
+
+
 
 # -----------------------------
 # TEACHER DASHBOARD
