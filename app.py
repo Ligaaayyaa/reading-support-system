@@ -13,17 +13,11 @@ st.set_page_config(
 # -----------------------------
 st.markdown("""
 <style>
+
+/* GENERAL BACKGROUND */
 .stApp {
     background: #F6F4FB;
     color: #29243A;
-}
-
-[data-testid="stSidebar"] {
-    background: #30204F;
-}
-
-[data-testid="stSidebar"] * {
-    color: white !important;
 }
 
 .block-container {
@@ -31,79 +25,13 @@ st.markdown("""
     padding-bottom: 2rem;
 }
 
-.top-label {
-    color: #8A7AA7;
-    font-size: 13px;
-    font-weight: 600;
+/* SIDEBAR */
+[data-testid="stSidebar"] {
+    background: #30204F;
 }
 
-.main-heading {
-    color: #342052;
-    font-size: 32px;
-    font-weight: 800;
-}
-
-.sub-heading {
-    color: #827894;
-    font-size: 14px;
-}
-
-.hero {
-    background: linear-gradient(110deg,#493078,#7956B5);
-    border-radius: 18px;
-    padding: 28px;
-    color: white;
-    margin: 18px 0 25px 0;
-}
-
-.hero h2 {
-    color: white;
-    margin: 0;
-}
-
-.hero p {
-    color: #EEE7FA;
-    margin-bottom: 0;
-}
-
-.stat-card {
-    background: white;
-    border: 1px solid #EAE4F2;
-    border-radius: 15px;
-    padding: 20px;
-    min-height: 125px;
-    box-shadow: 0 4px 15px rgba(50,30,80,.04);
-}
-
-.stat-name {
-    color: #81758F;
-    font-size: 13px;
-}
-
-.stat-number {
-    color: #493078;
-    font-size: 28px;
-    font-weight: 800;
-    margin-top: 8px;
-}
-
-.stat-note {
-    color: #9A90A7;
-    font-size: 11px;
-}
-
-.panel {
-    background: white;
-    border: 1px solid #EAE4F2;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 15px;
-}
-
-.panel-title {
-    color: #493078;
-    font-size: 18px;
-    font-weight: 700;
+[data-testid="stSidebar"] * {
+    color: white !important;
 }
 
 /* SIDEBAR NAVIGATION BUTTONS */
@@ -133,6 +61,135 @@ st.markdown("""
     border: 1px solid #A78BCE;
 }
 
+/* PURPLE PAGE HEADER */
+.page-header {
+    background: linear-gradient(110deg, #493078, #7956B5);
+    border-radius: 18px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    min-height: 145px;
+    box-shadow: 0 5px 18px rgba(50,30,80,.10);
+}
+
+.header-label {
+    color: #D8C8EF;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.header-title {
+    color: white;
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 5px;
+}
+
+.header-subtitle {
+    color: #EEE7FA;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* ADMIN PROFILE */
+.profile-card {
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 13px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.profile-avatar {
+    background: #A78BCE;
+    color: white;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.profile-name {
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.profile-role {
+    color: #E5D9F4;
+    font-size: 11px;
+}
+
+/* HERO SECTION */
+.hero {
+    background: linear-gradient(110deg,#493078,#7956B5);
+    border-radius: 18px;
+    padding: 28px;
+    color: white;
+    margin: 18px 0 25px 0;
+}
+
+.hero h2 {
+    color: white;
+    margin: 0;
+}
+
+.hero p {
+    color: #EEE7FA;
+    margin-bottom: 0;
+}
+
+/* STAT CARDS */
+.stat-card {
+    background: white;
+    border: 1px solid #EAE4F2;
+    border-radius: 15px;
+    padding: 20px;
+    min-height: 125px;
+    box-shadow: 0 4px 15px rgba(50,30,80,.04);
+}
+
+.stat-name {
+    color: #81758F;
+    font-size: 13px;
+}
+
+.stat-number {
+    color: #493078;
+    font-size: 28px;
+    font-weight: 800;
+    margin-top: 8px;
+}
+
+.stat-note {
+    color: #9A90A7;
+    font-size: 11px;
+}
+
+/* CONTENT PANELS */
+.panel {
+    background: white;
+    border: 1px solid #EAE4F2;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.panel-title {
+    color: #493078;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* GENERAL BUTTONS */
 div.stButton > button {
     background: #67449B;
     color: white;
@@ -145,11 +202,13 @@ div.stButton > button:hover {
     color: white;
 }
 
+/* FOOTER */
 .footer {
     text-align: center;
     color: #968BA4;
     font-size: 12px;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -191,6 +250,7 @@ if "current_page" not in st.session_state:
     st.session_state.current_page = "Overview"
 
 with st.sidebar:
+
     st.markdown("# 📚 Reading Support")
     st.caption("STUDENT LEARNING PLATFORM")
     st.divider()
@@ -214,35 +274,57 @@ with st.sidebar:
 
     st.divider()
     st.caption("CAPSTONE PROTOTYPE")
-    st.caption("Version 2.0")
+    st.caption("Version 2.1")
 
 page = st.session_state.current_page
 
 
 # -----------------------------
-# TOP HEADER
+# TOP HEADER WITH ADMIN PROFILE
 # -----------------------------
-left, right = st.columns([4, 1])
+header_left, header_right = st.columns([3, 1])
 
-with left:
-    st.markdown(
-        '<div class="top-label">ACADEMIC LEARNING PLATFORM</div>',
-        unsafe_allow_html=True
-    )
+with header_left:
 
-    st.markdown(
-        '<div class="main-heading">Reading Support System</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="page-header">
+        <div class="header-label">
+            ACADEMIC LEARNING PLATFORM
+        </div>
 
-    st.markdown(
-        '<div class="sub-heading">Reading performance and personalized learning support</div>',
-        unsafe_allow_html=True
-    )
+        <div class="header-title">
+            Reading Support System
+        </div>
 
-with right:
-    st.markdown(" ")
-    st.markdown("**👤 Administrator**")
+        <div class="header-subtitle">
+            Reading performance and personalized learning support
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with header_right:
+
+    st.markdown("""
+    <div class="page-header">
+        <div class="header-label">
+            ACCOUNT PROFILE
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-avatar">A</div>
+
+            <div>
+                <div class="profile-name">
+                    Administrator
+                </div>
+
+                <div class="profile-role">
+                    System Administrator
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.divider()
 
@@ -271,12 +353,22 @@ if page == "Overview":
     ]
 
     for col, item in zip([c1, c2, c3, c4], metrics):
+
         with col:
+
             st.markdown(f"""
             <div class="stat-card">
-                <div class="stat-name">{item[0]} {item[1]}</div>
-                <div class="stat-number">{item[2]}</div>
-                <div class="stat-note">{item[3]}</div>
+                <div class="stat-name">
+                    {item[0]} {item[1]}
+                </div>
+
+                <div class="stat-number">
+                    {item[2]}
+                </div>
+
+                <div class="stat-note">
+                    {item[3]}
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -285,6 +377,7 @@ if page == "Overview":
     chart_col, dist_col = st.columns([2, 1])
 
     with chart_col:
+
         st.markdown(
             '<div class="panel">',
             unsafe_allow_html=True
@@ -304,6 +397,7 @@ if page == "Overview":
         )
 
     with dist_col:
+
         st.markdown(
             '<div class="panel">',
             unsafe_allow_html=True
@@ -325,7 +419,10 @@ if page == "Overview":
         )
 
     st.markdown("### Recent Assessment Activity")
-    st.caption("Sample records only; not actual student information.")
+
+    st.caption(
+        "Sample records only; not actual student information."
+    )
 
     st.dataframe(
         data,
@@ -345,12 +442,22 @@ if page == "Overview":
     ]
 
     for col, icon, title, desc in modules:
+
         with col:
+
             st.markdown(f"""
             <div class="stat-card">
-                <div style="font-size:25px">{icon}</div>
-                <b style="color:#493078">{title}</b>
-                <div class="stat-note">{desc}</div>
+                <div style="font-size:25px">
+                    {icon}
+                </div>
+
+                <b style="color:#493078">
+                    {title}
+                </b>
+
+                <div class="stat-note">
+                    {desc}
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -361,7 +468,10 @@ if page == "Overview":
 elif page == "Student Dashboard":
 
     st.title("Student Dashboard")
-    st.caption("Your personal reading performance space.")
+
+    st.caption(
+        "Your personal reading performance space."
+    )
 
     c1, c2 = st.columns(2)
 
@@ -388,13 +498,17 @@ elif page == "Student Dashboard":
     x, y = st.columns(2)
 
     with x:
+
         st.markdown("**📖 Reading Comprehension**")
+
         st.write(
             "Understand passages and identify key details."
         )
 
     with y:
+
         st.markdown("**📝 Vocabulary Development**")
+
         st.write(
             "Develop vocabulary and context clue skills."
         )
@@ -406,7 +520,10 @@ elif page == "Student Dashboard":
 elif page == "Teacher Dashboard":
 
     st.title("Teacher Dashboard")
-    st.caption("Reading performance monitoring.")
+
+    st.caption(
+        "Reading performance monitoring."
+    )
 
     st.warning(
         "All records below are illustrative sample data."
@@ -467,12 +584,19 @@ elif page == "Reading Assessment":
     if st.button("Submit Answer"):
 
         if answer is None:
-            st.warning("Please select an answer.")
+
+            st.warning(
+                "Please select an answer."
+            )
 
         elif answer == "It improves vocabulary and comprehension.":
-            st.success("Correct answer!")
+
+            st.success(
+                "Correct answer!"
+            )
 
         else:
+
             st.error(
                 "Incorrect. Please review the passage."
             )
@@ -523,6 +647,6 @@ elif page == "Reading Support":
 st.divider()
 
 st.markdown(
-    '<div class="footer">Reading Support System | Academic Capstone Prototype | Version 2.0</div>',
+    '<div class="footer">Reading Support System | Academic Capstone Prototype | Version 2.1</div>',
     unsafe_allow_html=True
 )
