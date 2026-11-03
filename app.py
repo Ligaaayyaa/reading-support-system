@@ -858,6 +858,10 @@ can create positive and lasting effects on the community and the environment.
         if key not in st.session_state:
             st.session_state[key] = value
 
+    # Store all saved assessment records
+        if "saved_assessments" not in st.session_state:
+            st.session_state.saved_assessments = []
+
     skill_options = [
         "Main Idea",
         "Vocabulary",
@@ -1276,6 +1280,73 @@ can create positive and lasting effects on the community and the environment.
                         st.error(
                             "Please complete the question and all four choices."
                         )
+                    else:
+                        st.error(
+                            "Please complete the question and all four choices."
+                        )
+                                # -----------------------------
+        # SAVE ASSESSMENT AS NEW RECORD
+        # -----------------------------
+        st.markdown("---")
+        st.markdown("### 💾 Save Assessment")
+
+        st.caption(
+            "Save this passage and all its comprehension questions "
+            "as a new assessment record."
+        )
+
+        if st.button(
+            "Save Assessment",
+            key="save_assessment_button",
+            use_container_width=True
+        ):
+
+            if not st.session_state.admin_questions:
+                st.error("Please add at least one comprehension question.")
+
+            else:
+                new_assessment = {
+                    "Assessment ID": len(st.session_state.saved_assessments) + 1,
+                    "Passage Title": st.session_state.admin_passage_title,
+                    "Topic": st.session_state.admin_passage_topic,
+                    "Reading Level": st.session_state.admin_passage_level,
+                    "Reading Material": st.session_state.admin_passage_content,
+                    "Questions": [
+                        question.copy()
+                        for question in st.session_state.admin_questions
+                    ],
+                    "Total Questions": len(st.session_state.admin_questions),
+                    "Status": "Saved"
+                }
+
+                # Create a new record without overwriting previous assessments
+                st.session_state.saved_assessments.append(new_assessment)
+
+                # Reset the current assessment form
+                st.session_state.admin_passage_title = ""
+                st.session_state.admin_passage_topic = ""
+                st.session_state.admin_passage_level = "Secondary Education"
+                st.session_state.admin_passage_content = ""
+                st.session_state.admin_questions = []
+
+                st.session_state.passage_info_saved = False
+                st.session_state.reading_material_saved = False
+
+                # Clear Add New Question widget values
+                for key in [
+                    "new_question_skill",
+                    "new_question_text",
+                    "new_question_choice_0",
+                    "new_question_choice_1",
+                    "new_question_choice_2",
+                    "new_question_choice_3",
+                    "new_correct_answer"
+                ]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+
+                st.success("New assessment saved successfully!")
+                st.rerun()
 
     # -----------------------------
     # ADMIN SUMMARY
@@ -1308,6 +1379,62 @@ can create positive and lasting effects on the community and the environment.
         "Administrator content management prototype. Changes are stored "
         "in the current Streamlit session only and are not yet saved permanently."
     )
+        # -----------------------------
+    # SAVED ASSESSMENTS TABLE
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("## 📋 Saved Assessments")
+
+    if st.session_state.saved_assessments:
+
+        assessment_table = []
+
+        for assessment in st.session_state.saved_assessments:
+            assessment_table.append({
+                "Assessment ID": assessment["Assessment ID"],
+                "Passage Title": assessment["Passage Title"],
+                "Topic": assessment["Topic"],
+                "Reading Level": assessment["Reading Level"],
+                "Total Questions": assessment["Total Questions"],
+                "Status": assessment["Status"]
+            })
+
+        st.dataframe(
+            pd.DataFrame(assessment_table),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.markdown("### View Assessment Details")
+
+        for assessment in st.session_state.saved_assessments:
+
+            with st.expander(
+                f"Assessment {assessment['Assessment ID']} — "
+                f"{assessment['Passage Title']}"
+            ):
+                st.write(f"**Topic:** {assessment['Topic']}")
+                st.write(f"**Reading Level:** {assessment['Reading Level']}")
+                st.write(f"**Total Questions:** {assessment['Total Questions']}")
+
+                st.markdown("**Reading Material**")
+                st.write(assessment["Reading Material"])
+
+                st.markdown("**Comprehension Questions**")
+
+                for index, question in enumerate(
+                    assessment["Questions"], start=1
+                ):
+                    st.markdown(f"**{index}. {question['question']}**")
+                    st.caption(f"Skill: {question['skill']}")
+
+                    for option in question["options"]:
+                        st.write(f"- {option}")
+
+                    st.write(f"Correct Answer: {question['answer']}")
+
+    else:
+        st.info("No saved assessments yet.")
 
 
 # -----------------------------
