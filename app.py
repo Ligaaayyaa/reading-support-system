@@ -61,71 +61,64 @@ st.markdown("""
     border: 1px solid #A78BCE;
 }
 
-/* PURPLE PAGE HEADER */
-.page-header {
-    background: linear-gradient(110deg, #493078, #7956B5);
-    border-radius: 18px;
-    padding: 25px 30px;
-    margin-bottom: 25px;
-    min-height: 145px;
-    box-shadow: 0 5px 18px rgba(50,30,80,.10);
+/* TOP NAVBAR */
+.top-navbar {
+    background: #FFFFFF;
+    border-bottom: 1px solid #EAE6EF;
+    padding: 12px 24px;
+    margin: -2rem -1rem 25px -1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 76px;
 }
 
-.header-label {
-    color: #D8C8EF;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.header-title {
-    color: white;
-    font-size: 30px;
-    font-weight: 800;
-    margin-top: 5px;
-}
-
-.header-subtitle {
-    color: #EEE7FA;
-    font-size: 13px;
-    margin-top: 5px;
-}
-
-/* ADMIN PROFILE */
-.profile-card {
-    background: rgba(255,255,255,0.13);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 13px;
-    padding: 12px;
+.brand-section {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 12px;
 }
 
-.profile-avatar {
-    background: #A78BCE;
-    color: white;
+.brand-logo {
     width: 43px;
     height: 43px;
+    background: #493078;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.brand-name {
+    color: #30204F;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.admin-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-avatar {
+    width: 38px;
+    height: 38px;
+    background: #EEE8F6;
+    color: #493078;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    flex-shrink: 0;
+    font-size: 19px;
 }
 
-.profile-name {
-    color: white;
+.admin-name {
+    color: #30204F;
     font-size: 14px;
-    font-weight: 700;
-}
-
-.profile-role {
-    color: #E5D9F4;
-    font-size: 11px;
+    font-weight: 600;
 }
 
 /* HERO SECTION */
@@ -280,53 +273,33 @@ page = st.session_state.current_page
 
 
 # -----------------------------
-# TOP HEADER WITH ADMIN PROFILE
+# CORPORATE TOP NAVBAR
 # -----------------------------
-header_left, header_right = st.columns([3, 1])
+st.markdown("""
+<div class="top-navbar">
 
-with header_left:
-
-    st.markdown("""
-    <div class="page-header">
-        <div class="header-label">
-            ACADEMIC LEARNING PLATFORM
+    <div class="brand-section">
+        <div class="brand-logo">
+            📚
         </div>
 
-        <div class="header-title">
+        <div class="brand-name">
             Reading Support System
         </div>
+    </div>
 
-        <div class="header-subtitle">
-            Reading performance and personalized learning support
+    <div class="admin-section">
+        <div class="admin-avatar">
+            👤
+        </div>
+
+        <div class="admin-name">
+            Administrator
         </div>
     </div>
-    """, unsafe_allow_html=True)
 
-with header_right:
-
-    st.markdown("""
-    <div class="page-header">
-        <div class="header-label">
-            ACCOUNT PROFILE
-        </div>
-
-        <div class="profile-card">
-            <div class="profile-avatar">A</div>
-
-            <div>
-                <div class="profile-name">
-                    Administrator
-                </div>
-
-                <div class="profile-role">
-                    System Administrator
-                </div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.divider()
+</div>
+""", unsafe_allow_html=True)
 
 
 # -----------------------------
