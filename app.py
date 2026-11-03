@@ -1574,112 +1574,138 @@ can create positive and lasting effects on the community and the environment.
 
                 st.write(selected_assessment["Reading Material"])
 
-            # ==================================
-            # ADD NEW QUESTION
+                      # ==================================
+            # ADD NEW QUESTION - COLLAPSIBLE FORM
             # ==================================
             st.markdown("---")
             st.markdown("### ➕ Add New Question")
 
-            skill_options = [
-                "Main Idea",
-                "Vocabulary",
-                "Supporting Details",
-                "Inference",
-                "Cause and Effect",
-                "Critical Thinking",
-                "Conclusion"
-            ]
+            # Unique state key for each assessment
+            show_add_question_key = f"show_add_question_{assessment_id}"
 
-            with st.container(border=True):
+            if show_add_question_key not in st.session_state:
+                st.session_state[show_add_question_key] = False
 
-                with st.form(
-                    f"add_question_details_{assessment_id}"
+            # SHOW ADD QUESTION BUTTON
+            if not st.session_state[show_add_question_key]:
+
+                if st.button(
+                    "➕ Add Question",
+                    key=f"open_add_question_{assessment_id}",
+                    use_container_width=True
                 ):
+                    st.session_state[show_add_question_key] = True
+                    st.rerun()
 
-                    added_skill = st.selectbox(
-                        "Question Skill",
-                        skill_options,
-                        key=f"detail_skill_{assessment_id}"
+            # DISPLAY FORM ONLY WHEN OPENED
+            if st.session_state[show_add_question_key]:
+
+                with st.container(border=True):
+
+                    st.markdown("#### New Comprehension Question")
+                    st.caption(
+                        "Enter the question, four answer choices, "
+                        "and select the correct answer."
                     )
 
-                    added_question = st.text_input(
-                        "Question",
-                        key=f"detail_question_{assessment_id}"
-                    )
+                    # COLLAPSE FORM BUTTON
+                    if st.button(
+                        "▲ Hide Form",
+                        key=f"hide_add_question_{assessment_id}"
+                    ):
+                        st.session_state[show_add_question_key] = False
+                        st.rerun()
 
-                    added_options = []
+                    with st.form(
+                        f"add_question_details_{assessment_id}"
+                    ):
 
-                    for i in range(4):
-
-                        added_options.append(
-                            st.text_input(
-                                f"Choice {chr(65 + i)}",
-                                key=f"detail_option_{assessment_id}_{i}"
-                            )
+                        added_skill = st.selectbox(
+                            "Question Skill",
+                            skill_options,
+                            key=f"detail_skill_{assessment_id}"
                         )
 
-                    added_correct_answer = st.selectbox(
-                        "Correct Answer",
-                        options=[0, 1, 2, 3],
-                        format_func=lambda x: f"Choice {chr(65 + x)}",
-                        key=f"detail_answer_{assessment_id}"
-                    )
+                        added_question = st.text_input(
+                            "Question",
+                            key=f"detail_question_{assessment_id}"
+                        )
 
-                    add_question_details = st.form_submit_button(
-                        "➕ Add Question",
-                        use_container_width=True
-                    )
+                        added_options = []
 
-                    if add_question_details:
+                        for i in range(4):
 
-                        if (
-                            added_question.strip()
-                            and all(option.strip() for option in added_options)
-                        ):
-
-                            for assessment in st.session_state.saved_assessments:
-
-                                if assessment["Assessment ID"] == assessment_id:
-
-                                    assessment["Questions"].append({
-                                        "skill": added_skill,
-                                        "question": added_question.strip(),
-                                        "options": [
-                                            option.strip()
-                                            for option in added_options
-                                        ],
-                                        "answer": added_options[
-                                            added_correct_answer
-                                        ].strip()
-                                    })
-
-                                    assessment["Total Questions"] = len(
-                                        assessment["Questions"]
-                                    )
-
-                                    break
-
-                            st.success("New question added successfully!")
-
-                            for key in [
-                                f"detail_skill_{assessment_id}",
-                                f"detail_question_{assessment_id}",
-                                *[
-                                    f"detail_option_{assessment_id}_{i}"
-                                    for i in range(4)
-                                ],
-                                f"detail_answer_{assessment_id}"
-                            ]:
-                                if key in st.session_state:
-                                    del st.session_state[key]
-
-                            st.rerun()
-
-                        else:
-                            st.error(
-                                "Please complete the question and all four choices."
+                            added_options.append(
+                                st.text_input(
+                                    f"Choice {chr(65 + i)}",
+                                    key=f"detail_option_{assessment_id}_{i}"
+                                )
                             )
 
+                        added_correct_answer = st.selectbox(
+                            "Correct Answer",
+                            options=[0, 1, 2, 3],
+                            format_func=lambda x: f"Choice {chr(65 + x)}",
+                            key=f"detail_answer_{assessment_id}"
+                        )
+
+                        add_question_details = st.form_submit_button(
+                            "💾 Save Question",
+                            use_container_width=True
+                        )
+
+                        if add_question_details:
+
+                            if (
+                                added_question.strip()
+                                and all(
+                                    option.strip()
+                                    for option in added_options
+                                )
+                            ):
+
+                                for assessment in st.session_state.saved_assessments:
+
+                                    if assessment["Assessment ID"] == assessment_id:
+
+                                        assessment["Questions"].append({
+                                            "skill": added_skill,
+                                            "question": added_question.strip(),
+                                            "options": [
+                                                option.strip()
+                                                for option in added_options
+                                            ],
+                                            "answer": added_options[
+                                                added_correct_answer
+                                            ].strip()
+                                        })
+
+                                        assessment["Total Questions"] = len(
+                                            assessment["Questions"]
+                                        )
+
+                                        break
+
+                                st.session_state[show_add_question_key] = False
+
+                                st.success(
+                                    "New question added successfully!"
+                                )
+                                st.rerun()
+
+                            else:
+                                st.error(
+                                    "Please complete the question and all four choices."
+                                )
+
+                    # CANCEL BUTTON - OUTSIDE THE FORM
+                    if st.button(
+                        "Cancel",
+                        key=f"cancel_add_question_{assessment_id}",
+                        use_container_width=True
+                    ):
+                        st.session_state[show_add_question_key] = False
+                        st.rerun()
             # ==================================
             # EXISTING QUESTIONS
             # ==================================
