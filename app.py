@@ -1212,19 +1212,19 @@ elif page == "Student Dashboard":
             st.info("No assessment results available for this student yet.")
 
 
+
 # -----------------------------
 # TEACHER DASHBOARD
 # -----------------------------
 elif page == "Teacher Dashboard":
 
     st.title("👩‍🏫 Teacher Dashboard")
-    st.caption("Monitor assigned students and their reading performance.")
+    st.caption("Monitor assigned students and their reading assessment performance.")
 
-    # GET REGISTERED RECORDS
     teachers = st.session_state.teacher_records
     students = st.session_state.student_records
+    results = st.session_state.assessment_results
 
-    # CHECK IF TEACHERS ARE AVAILABLE
     if not teachers:
 
         st.info("No registered teachers available. Please add teachers in User Management.")
@@ -1232,56 +1232,71 @@ elif page == "Teacher Dashboard":
     else:
 
         # SELECT TEACHER
-        teacher_names = [
-            teacher["Full Name"]
+        teacher_options = {
+            f"{teacher['Full Name']} - {teacher['Subject']}": teacher
             for teacher in teachers
-        ]
+        }
 
-        selected_teacher = st.selectbox(
+        selected_teacher_label = st.selectbox(
             "Select Teacher",
-            teacher_names
+            list(teacher_options.keys())
         )
+
+        selected_teacher = teacher_options[selected_teacher_label]
+        selected_teacher_name = selected_teacher["Full Name"]
 
         # FILTER ASSIGNED STUDENTS
         assigned_students = [
             student for student in students
-            if student.get("Assigned Teacher") == selected_teacher
+            if student.get("Assigned Teacher") == selected_teacher_name
         ]
 
-        # SUMMARY
-        total_students = len(assigned_students)
+        assigned_student_ids = [
+            student["Student ID"]
+            for student in assigned_students
+        ]
 
-        grade_10_count = sum(
-            1 for student in assigned_students
-            if student.get("Grade Level") == "Grade 10"
-        )
-
-        grade_11_count = sum(
-            1 for student in assigned_students
-            if student.get("Grade Level") == "Grade 11"
-        )
-
-        col1, col2, col3 = st.columns(3)
-
-        col1.metric("Assigned Students", total_students)
-        col2.metric("Grade 10 Students", grade_10_count)
-        col3.metric("Grade 11 Students", grade_11_count)
+        # FILTER RESULTS OF ASSIGNED STUDENTS
+        teacher_results = [
+            result for result in results
+            if result.get("Student ID") in assigned_student_ids
+        ]
 
         st.divider()
 
         # TEACHER INFORMATION
-        teacher_info = next(
-            teacher for teacher in teachers
-            if teacher["Full Name"] == selected_teacher
-        )
-
         st.subheader("Teacher Information")
 
         with st.container(border=True):
+            st.write(f"**Name:** {selected_teacher['Full Name']}")
+            st.write(f"**Email:** {selected_teacher['Email']}")
+            st.write(f"**Subject / Specialization:** {selected_teacher['Subject']}")
 
-            st.write(f"**Name:** {teacher_info['Full Name']}")
-            st.write(f"**Email:** {teacher_info['Email']}")
-            st.write(f"**Subject / Specialization:** {teacher_info['Subject']}")
+        st.divider()
+
+        # CLASS PERFORMANCE SUMMARY
+        st.subheader("📊 Class Performance Summary")
+
+        total_students = len(assigned_students)
+        total_submissions = len(teacher_results)
+
+        average_score = (
+            sum(result["Percentage"] for result in teacher_results)
+            / total_submissions
+            if total_submissions > 0 else 0
+        )
+
+        students_with_results = len({
+            result["Student ID"]
+            for result in teacher_results
+        })
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        col1.metric("Assigned Students", total_students)
+        col2.metric("Students with Results", students_with_results)
+        col3.metric("Assessment Submissions", total_submissions)
+        col4.metric("Average Score", f"{average_score:.2f}%")
 
         st.divider()
 
@@ -1312,20 +1327,95 @@ elif page == "Teacher Dashboard":
 
         st.divider()
 
-        # UNASSIGNED STUDENTS
-        unassigned_students = [
-            student for student in students
-            if not student.get("Assigned Teacher")
-        ]
+        # STUDENT ASSESSMENT RESULTS
+        st.subheader("📝 Student Assessment Results")
 
-        st.subheader("📋 Students Without Assigned Teachers")
+        if teacher_results:
 
-        if unassigned_students:
-
-            unassigned_df = pd.DataFrame(unassigned_students)
+            results_df = pd.DataFrame(teacher_results)
 
             st.dataframe(
-                unassigned_df[
+                results_df[
+                    [
+                        "Student Name",
+                        "Grade Level",
+                        "Assessment Title",
+                        "Score",
+                        "Total Questions",
+                        "Percentage",
+                        "Classification",
+                        "Submitted At"
+                    ]
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+
+        else:
+
+            st.info("No assessment results available for this teacher's assigned students.")
+
+        st.divider()
+
+        # READING PERFORMANCE DISTRIBUTION
+        st.subheader("📈 Reading Performance Distribution")
+
+        if teacher_results:
+
+            classification_order = [
+                "Beginning",
+                "Developing",
+                "Proficient",
+                "Advanced"
+            ]
+
+            classification_counts = {
+                classification: sum(
+                    1 for result in teacher_results
+                    if result["Classification"] == classification
+                )
+                for classification in classification_order
+            }
+
+            classification_df = pd.DataFrame({
+                "Classification": classification_order,
+                "Number of Submissions": [
+                    classification_counts[classification]
+                    for classification in classification_order
+                ]
+            })
+
+            st.bar_chart(
+                classification_df.set_index("Classification")
+            )
+
+            st.caption(
+                "The chart represents assessment submissions, not unique students."
+            )
+
+        else:
+
+            st.info("Performance distribution will appear once students submit assessments.")
+
+        st.divider()
+
+        # STUDENTS WITHOUT ASSESSMENT RESULTS
+        st.subheader("📋 Students Without Assessment Results")
+
+        students_without_results = [
+            student for student in assigned_students
+            if student["Student ID"] not in {
+                result["Student ID"]
+                for result in teacher_results
+            }
+        ]
+
+        if students_without_results:
+
+            pending_df = pd.DataFrame(students_without_results)
+
+            st.dataframe(
+                pending_df[
                     [
                         "Student ID",
                         "Full Name",
@@ -1339,7 +1429,7 @@ elif page == "Teacher Dashboard":
 
         else:
 
-            st.success("All registered students have an assigned teacher.")
+            st.success("All assigned students have submitted at least one assessment.")
 
 
 # -----------------------------
