@@ -1280,136 +1280,126 @@ can create positive and lasting effects on the community and the environment.
                             "Please complete the question and all four choices."
                         )
 
-     # ==========================================
-# SAVED ASSESSMENTS MANAGEMENT
-# ==========================================
-
-st.markdown("---")
-st.markdown("## 📋 Saved Assessments")
-st.caption("View and manage all assessments created by the administrator.")
-
-if "selected_assessment_id" not in st.session_state:
-    st.session_state.selected_assessment_id = None
-
-if st.session_state.saved_assessments:
-
-    # Table Headers
-    header_cols = st.columns([0.7, 2, 1.5, 1, 1.2, 1.5])
-
-    header_cols[0].markdown("**ID**")
-    header_cols[1].markdown("**Passage Title**")
-    header_cols[2].markdown("**Reading Level**")
-    header_cols[3].markdown("**Questions**")
-    header_cols[4].markdown("**Status**")
-    header_cols[5].markdown("**Action**")
-
-    st.divider()
-
-    # Assessment Records
-    for assessment in st.session_state.saved_assessments:
-
-        cols = st.columns([0.7, 2, 1.5, 1, 1.2, 1.5])
-
-        cols[0].write(assessment["Assessment ID"])
-        cols[1].write(assessment["Passage Title"])
-        cols[2].write(assessment["Reading Level"])
-        cols[3].write(assessment["Total Questions"])
-        cols[4].write(assessment["Status"])
-
-        if cols[5].button(
-            "View Details",
-            key=f"view_assessment_{assessment['Assessment ID']}",
-            use_container_width=True
-        ):
-            st.session_state.selected_assessment_id = assessment["Assessment ID"]
-            st.rerun()
-
-    # ==========================================
-    # VIEW SELECTED ASSESSMENT DETAILS
-    # ==========================================
-
-    selected_assessment = next(
-        (
-            assessment
-            for assessment in st.session_state.saved_assessments
-            if assessment["Assessment ID"]
-            == st.session_state.selected_assessment_id
-        ),
-        None
-    )
-
-    if selected_assessment:
-
+        # -----------------------------
+        # SAVE ASSESSMENT AS NEW RECORD
+        # -----------------------------
         st.markdown("---")
-        st.markdown("## 📖 Assessment Details")
+        st.markdown("### 💾 Save Assessment")
 
-        st.markdown(
-            f"### {selected_assessment['Passage Title']}"
+        st.caption(
+            "Save this passage and all its comprehension questions "
+            "as a new assessment record."
         )
-
-        detail_cols = st.columns(3)
-
-        detail_cols[0].metric(
-            "Assessment ID",
-            selected_assessment["Assessment ID"]
-        )
-
-        detail_cols[1].metric(
-            "Reading Level",
-            selected_assessment["Reading Level"]
-        )
-
-        detail_cols[2].metric(
-            "Total Questions",
-            selected_assessment["Total Questions"]
-        )
-
-        st.markdown("### Passage Information")
-
-        st.write(f"**Passage Title:** {selected_assessment['Passage Title']}")
-        st.write(f"**Topic:** {selected_assessment['Topic']}")
-        st.write(f"**Reading Level:** {selected_assessment['Reading Level']}")
-        st.write(f"**Status:** {selected_assessment['Status']}")
-
-        st.markdown("### Reading Material")
-
-        st.markdown(
-            selected_assessment["Reading Material"]
-        )
-
-        st.markdown("### Comprehension Questions")
-
-        for index, question in enumerate(
-            selected_assessment["Questions"], start=1
-        ):
-
-            with st.expander(
-                f"Question {index}: {question['skill']}"
-            ):
-
-                st.write(f"**Question:** {question['question']}")
-
-                for option_index, option in enumerate(
-                    question["options"]
-                ):
-                    st.write(
-                        f"{chr(65 + option_index)}. {option}"
-                    )
-
-                st.write(
-                    f"**Correct Answer:** "
-                    f"{question['options'][question['correct_answer']]}"
-                )
 
         if st.button(
-            "Close Details",
-            key="close_assessment_details"
+            "Save Assessment",
+            key="save_assessment_button",
+            use_container_width=True
         ):
-            st.session_state.selected_assessment_id = None
-            st.rerun()
 
-else:
-    st.info("No saved assessments yet.")
+            if not st.session_state.admin_questions:
+                st.error("Please add at least one comprehension question.")
+
+            else:
+                new_assessment = {
+                    "Assessment ID": len(st.session_state.saved_assessments) + 1,
+                    "Passage Title": st.session_state.admin_passage_title,
+                    "Topic": st.session_state.admin_passage_topic,
+                    "Reading Level": st.session_state.admin_passage_level,
+                    "Reading Material": st.session_state.admin_passage_content,
+                    "Questions": [
+                        question.copy()
+                        for question in st.session_state.admin_questions
+                    ],
+                    "Total Questions": len(st.session_state.admin_questions),
+                    "Status": "Saved"
+                }
+
+                # Create a new record without overwriting previous assessments
+                st.session_state.saved_assessments.append(new_assessment)
+
+                # Reset the current assessment form
+                st.session_state.admin_passage_title = ""
+                st.session_state.admin_passage_topic = ""
+                st.session_state.admin_passage_level = "Secondary Education"
+                st.session_state.admin_passage_content = ""
+                st.session_state.admin_questions = []
+
+                st.session_state.passage_info_saved = False
+                st.session_state.reading_material_saved = False
+
+                # Clear Add New Question widget values
+                for key in [
+                    "new_question_skill",
+                    "new_question_text",
+                    "new_question_choice_0",
+                    "new_question_choice_1",
+                    "new_question_choice_2",
+                    "new_question_choice_3",
+                    "new_correct_answer"
+                ]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+
+                st.success("New assessment saved successfully!")
+                st.rerun()
+
+        # -----------------------------
+    # SAVED ASSESSMENTS TABLE
+    # -----------------------------
+    st.markdown("---")
+    st.markdown("## 📋 Saved Assessments")
+
+    if st.session_state.saved_assessments:
+
+        assessment_table = []
+
+        for assessment in st.session_state.saved_assessments:
+            assessment_table.append({
+                "Assessment ID": assessment["Assessment ID"],
+                "Passage Title": assessment["Passage Title"],
+                "Topic": assessment["Topic"],
+                "Reading Level": assessment["Reading Level"],
+                "Total Questions": assessment["Total Questions"],
+                "Status": assessment["Status"]
+            })
+
+        st.dataframe(
+            pd.DataFrame(assessment_table),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.markdown("### View Assessment Details")
+
+        for assessment in st.session_state.saved_assessments:
+
+            with st.expander(
+                f"Assessment {assessment['Assessment ID']} — "
+                f"{assessment['Passage Title']}"
+            ):
+                st.write(f"**Topic:** {assessment['Topic']}")
+                st.write(f"**Reading Level:** {assessment['Reading Level']}")
+                st.write(f"**Total Questions:** {assessment['Total Questions']}")
+
+                st.markdown("**Reading Material**")
+                st.write(assessment["Reading Material"])
+
+                st.markdown("**Comprehension Questions**")
+
+                for index, question in enumerate(
+                    assessment["Questions"], start=1
+                ):
+                    st.markdown(f"**{index}. {question['question']}**")
+                    st.caption(f"Skill: {question['skill']}")
+
+                    for option in question["options"]:
+                        st.write(f"- {option}")
+
+                    st.write(f"Correct Answer: {question['answer']}")
+
+    else:
+        st.info("No saved assessments yet.")
         
     # -----------------------------
     # ADMIN SUMMARY
